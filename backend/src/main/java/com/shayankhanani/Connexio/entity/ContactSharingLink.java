@@ -10,7 +10,6 @@ import java.time.LocalDateTime;
 @Data
 
 public class ContactSharingLink {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -26,10 +25,9 @@ public class ContactSharingLink {
     private LocalDateTime expiresAt;
 
     private LocalDateTime createdAt;
-
-    @PrePersist
-    protected void onCreate() {
-        this.createdAt = LocalDateTime.now();
-    }
-
+//
+//    @PrePersist
+//    protected void onCreate() {
+//        this.createdAt = LocalDateTime.now();
+//    }
 }
