@@ -21,7 +21,6 @@ public class UserServiceImpl implements UserService{
     private final ModelMapper modelMapper;
 
 
-
     /// without mapper
 
 //    @Override
@@ -51,5 +50,6 @@ public class UserServiceImpl implements UserService{
         User savedUser = userRepo.save(newUser);
         return modelMapper.map(savedUser,UserDTO.class);
     }
+
 
 }

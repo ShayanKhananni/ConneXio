@@ -25,11 +25,10 @@ public class User implements UserDetails {
     private String password;
 
 
-    private String linkdUrl;
-    private String instaUrl;
-    private String profUrl;
-    private String fbUrl;
-
+    private String linkedinUrl;
+    private String instagramUrl;
+    private String profImageUrl;
+    private String facebookUrl;
 
     private LocalDateTime createdAt = LocalDateTime.now();
 

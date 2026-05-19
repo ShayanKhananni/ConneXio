@@ -17,7 +17,6 @@ import java.util.List;
 )
 
 
-
 @Data
 public class Contact {
     @Id
@@ -28,23 +27,31 @@ public class Contact {
     @JoinColumn(name = "owner_id", nullable = false)
     private User owner;
 
-    private String firsName;
+    private String firstName;
     private String lastName;
 
-    private String linkdUrl;
-    private String instaUrl;
-    private String profUrl;
-    private String fbUrl;
+    //optionals
+    private String linkedinUrl;
+    private String instagramUrl;
+    private String profImageUrl;
+    private String facebookUrl;
 
     @ManyToOne
     @JoinColumn(name = "app_user_id")
     private User LinkedUser;
 
 
-    @OneToMany(mappedBy = "contact")
+    @OneToMany(mappedBy = "contact", cascade = {CascadeType.PERSIST, CascadeType.MERGE
+    ,                CascadeType.REMOVE})
+
     private List<Phone> phones = new ArrayList<>();
-    @OneToMany(mappedBy = "contact")
+
+    @OneToMany(mappedBy = "contact", cascade = {CascadeType.PERSIST, CascadeType.MERGE,
+            CascadeType.REMOVE
+    })
     private List<Email> emails = new ArrayList<>();
+
+
 
     private LocalDateTime createdAt = LocalDateTime.now();
 }

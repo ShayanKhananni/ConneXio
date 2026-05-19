@@ -19,6 +19,7 @@ import java.util.function.Function;
 @Service
 public class JWTService {
 
+
     private String secretkey;
 
     public JWTService() {
@@ -39,10 +40,12 @@ public class JWTService {
                 .setClaims(claims)
                 .setSubject(username)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 60 * 60 * 30))
+                .setExpiration(new Date(System.currentTimeMillis() + 30 * 60 * 1000))
+
                 .signWith(getKey())
                 .compact();
     }
+
 
     private Key getKey()
     {

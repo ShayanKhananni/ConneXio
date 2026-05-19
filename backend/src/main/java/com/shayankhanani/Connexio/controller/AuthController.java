@@ -2,50 +2,48 @@ package com.shayankhanani.Connexio.controller;
 
 
 import com.shayankhanani.Connexio.DTO.Auth.LoginDTO;
+import com.shayankhanani.Connexio.DTO.Auth.LoignRespDTO;
 import com.shayankhanani.Connexio.DTO.Auth.RegisterDTO;
-import com.shayankhanani.Connexio.DTO.Auth.RespUserDTO;
-import com.shayankhanani.Connexio.entity.Userprincipal;
 import com.shayankhanani.Connexio.repository.UserRepo;
+import com.shayankhanani.Connexio.services.AuthServiceImpl;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+@RequiredArgsConstructor
 @RestController
 public class AuthController {
 
-    @Autowired
-    private com.shayankhanani.Connexio.services.AuthService authService;
-
+    private final AuthServiceImpl authService;
 
     private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
-    @Autowired
-    private UserRepo userRepo;
-    private ModelMapper modelMapper;
 
 
-    @GetMapping("/user")
-    public Userprincipal home()
-    {
-        return authService.getUser();
-    }
+//        return ResponseEntity.status(HttpStatus.CREATED)
+//                .body(studentService.addStudent(addStudDTO));
 
 
     @PostMapping("/signup")
-    public RespUserDTO signup(@RequestBody RegisterDTO registerDTO)
+    public ResponseEntity<?> signup(@RequestBody @Valid RegisterDTO registerDTO)
     {
         registerDTO.setPassword(encoder.encode(registerDTO.getPassword()));
-        return authService.registerUser(registerDTO);
+        authService.signup(registerDTO);
+                return ResponseEntity.status(HttpStatus.CREATED)
+                .body("Account Created Successfully");
     }
 
     @PostMapping("/login")
-    public String signup(@RequestBody LoginDTO loginDTO)
-    {
-        return authService.verify(loginDTO);
-    }
+    public ResponseEntity<LoignRespDTO> login(@RequestBody LoginDTO loginDTO) {
 
+        LoignRespDTO response = authService.login(loginDTO);
+        return ResponseEntity.ok(response);
+    }
 
 }

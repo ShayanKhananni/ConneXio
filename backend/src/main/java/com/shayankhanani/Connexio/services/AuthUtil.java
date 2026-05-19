@@ -1,29 +1,26 @@
 package com.shayankhanani.Connexio.services;
 
 import com.shayankhanani.Connexio.entity.Userprincipal;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+
 
 @Component
 public class AuthUtil {
 
+    private Userprincipal getUser()
+    {
+        Authentication authentication = SecurityContextHolder.getContext()
+                .getAuthentication();
+        return (Userprincipal) authentication.getPrincipal();
+    }
+
     public Long getUserId()
     {
-        return ((Userprincipal)
-                SecurityContextHolder.getContext()
-                        .getAuthentication()
-                        .getPrincipal())
-                .getUserId();
+        Userprincipal user = getUser();
+        return user.getUserId();
     }
-
-    public Userprincipal getUser()
-    {
-        return ((Userprincipal)
-                SecurityContextHolder.getContext()
-                        .getAuthentication()
-                        .getPrincipal());
-    }
-
 
 
 }

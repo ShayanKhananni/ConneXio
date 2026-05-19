@@ -1,23 +1,32 @@
 package com.shayankhanani.Connexio.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 
 @Entity
 @Table(
         name = "contact_emails",
         uniqueConstraints = {
-                @UniqueConstraint(columnNames = {"contact_id","email"})
+                @UniqueConstraint(
+                        name = "uk_contact_email",
+                        columnNames = {"contact_id", "email"}
+                )
         }
 )
 
+
+@Setter
+@Getter
 public class Email {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String email;
-    @Column(nullable = false)
-    private String label;
+
+//    @Column(nullable = false)
+//    private String label;
 
     @ManyToOne
     @JoinColumn(name = "contact_id", nullable = false)

@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class MyUserDetailsService implements UserDetailsService {
 
-
     private final UserRepo userRepo;
 
     @Override
@@ -26,6 +25,7 @@ public class MyUserDetailsService implements UserDetailsService {
             System.out.println("User not found!!");
             throw new UsernameNotFoundException("Username not Found!!");
         }
+
         return new Userprincipal(user);
     }
 }
