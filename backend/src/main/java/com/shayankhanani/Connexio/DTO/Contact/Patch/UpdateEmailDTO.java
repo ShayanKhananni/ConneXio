@@ -1,4 +1,4 @@
-package com.shayankhanani.Connexio.DTO.Contact;
+package com.shayankhanani.Connexio.DTO.Contact.Patch;
 
 import lombok.Data;
 
@@ -6,5 +6,4 @@ import lombok.Data;
 public class UpdateEmailDTO {
     private Long id;
     private String email;
-    private Boolean delete;
 }

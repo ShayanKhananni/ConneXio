@@ -1,7 +1,5 @@
 package com.shayankhanani.Connexio.DTO.Contact;
-
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
+import com.shayankhanani.Connexio.entity.Phone;
 import lombok.Data;
 
 import java.util.List;
@@ -18,6 +16,7 @@ public class ContactDTO {
     private String instagramUrl;
     private String profImageUrl;
     private String facebookUrl;
+    private Long linkedUserId;
 
     private List<EmailDTO> emails;
     private List<PhoneDTO> phones;

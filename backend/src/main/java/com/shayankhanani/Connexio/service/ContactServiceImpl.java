@@ -7,19 +7,16 @@ import com.shayankhanani.Connexio.entity.Email;
 import com.shayankhanani.Connexio.entity.Phone;
 import com.shayankhanani.Connexio.entity.Userprincipal;
 import com.shayankhanani.Connexio.exception.ResourceNotFoundException;
-import com.shayankhanani.Connexio.exception.UnauthorizedException;
 import com.shayankhanani.Connexio.exception.contact.DuplicateEmailException;
 import com.shayankhanani.Connexio.exception.contact.DuplicatePhoneException;
 import com.shayankhanani.Connexio.repository.ContactRepo;
 import com.shayankhanani.Connexio.repository.EmailRepo;
 import com.shayankhanani.Connexio.repository.PhoneRepo;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -37,12 +34,15 @@ public class ContactServiceImpl implements ContactService {
     private static final Logger logger = LoggerFactory.getLogger(ContactServiceImpl.class);
 
 
-    @Override
-    public List<ContactDTO> getUserContacts(Userprincipal owner) {
-        List<Contact> contacts = contactRepo.findContactByOwner(owner.getUser());
 
-        logger.info("Hello from service");
-        System.out.println(">>> SERVICE HIT");
+
+
+
+
+    @Override
+    public List<ContactInfoDTO> getContactsInfo(Userprincipal owner) {
+
+        List<Contact> contacts = contactRepo.findContactByOwner(owner.getUser());
 
         if(contacts.isEmpty())
         {
@@ -50,20 +50,34 @@ public class ContactServiceImpl implements ContactService {
         }
 
         return contacts.stream()
-                .map(c -> modelMapper.map(c, ContactDTO.class))
+                .map(c -> modelMapper.map(c, ContactInfoDTO.class))
                 .toList();
     }
 
+
+    @Override
+    public ContactDetailDTO getContactDetails(Userprincipal owner, Long id) {
+
+        Contact contact = contactRepo.findByContactIdAndOwner(id, owner.getUser())
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Contact not found!!"));
+
+        return modelMapper.map(contact,ContactDetailDTO.class);
+    }
+
+
+
+
+
     @Transactional
     @Override
-    public ContactDTO addContact(AddedContactDTO addedContactDTO, Userprincipal owner) {
+    public ContactDetailDTO addContact(AddedContactDTO addedContactDTO, Userprincipal owner) {
 
         Set<String> seen = new HashSet<>(addedContactDTO.getPhones());
 
         if (seen.size() != addedContactDTO.getPhones().size()) {
             throw new DuplicatePhoneException("Duplicate phone number for contact");
         }
-
 
         seen = new HashSet<>(addedContactDTO.getEmails());
 
@@ -95,7 +109,7 @@ public class ContactServiceImpl implements ContactService {
           newContact.setEmails(emailEntities);
 
             Contact savedContact = contactRepo.save(newContact);
-            ContactDTO contactDTO = new ContactDTO();
+            ContactDetailDTO contactDTO = new ContactDetailDTO();
             modelMapper.map(savedContact,contactDTO);
             contactDTO.setContactId(savedContact.getContactId());
             return contactDTO;
@@ -105,9 +119,9 @@ public class ContactServiceImpl implements ContactService {
 
     @Transactional
     @Override
-    public ContactDTO updateContactInfo(Long id,
-                                        UpdateContactInfoDTO dto,
-                                        Userprincipal owner) {
+    public ContactDetailDTO updateContactInfo(Long id,
+                                              UpdateContactInfoDTO dto,
+                                              Userprincipal owner) {
 
         Contact contact = contactRepo.findByContactIdAndOwner(id, owner.getUser())
                 .orElseThrow(() ->
@@ -143,7 +157,7 @@ public class ContactServiceImpl implements ContactService {
         }
         Contact updated = contactRepo.save(contact);
 
-        return modelMapper.map(updated, ContactDTO.class);
+        return modelMapper.map(updated, ContactDetailDTO.class);
 
     }
     @Transactional
@@ -216,6 +230,7 @@ public class ContactServiceImpl implements ContactService {
                             .toList());
         }
     }
+
 
     @Override
     public void deleteById(Long id, Userprincipal owner) {
@@ -297,9 +312,5 @@ public class ContactServiceImpl implements ContactService {
 
         }
     }
-
-
-
-
 
 }

@@ -13,6 +13,11 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
+import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
+
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
@@ -27,6 +32,9 @@ public class AuthServiceImpl implements AuthService {
     {
         Authentication authentication = authenticationManager.authenticate(new
                 UsernamePasswordAuthenticationToken(loginDTO.getUsername(),loginDTO.getPassword()));
+
+
+        KeyGenerator keyGen = null;
 
         String token = jwtService.generateToken(loginDTO.getUsername());
         return new LoignRespDTO(token);
