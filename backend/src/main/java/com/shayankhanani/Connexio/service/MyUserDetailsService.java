@@ -1,4 +1,4 @@
-package com.shayankhanani.Connexio.services;
+package com.shayankhanani.Connexio.service;
 
 import com.shayankhanani.Connexio.entity.User;
 import com.shayankhanani.Connexio.entity.Userprincipal;

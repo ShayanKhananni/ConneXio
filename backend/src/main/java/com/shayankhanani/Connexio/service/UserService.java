@@ -1,8 +1,7 @@
-package com.shayankhanani.Connexio.services;
+package com.shayankhanani.Connexio.service;
 
 import com.shayankhanani.Connexio.DTO.User.AddUserDTO;
 import com.shayankhanani.Connexio.DTO.User.UserDTO;
-import com.shayankhanani.Connexio.entity.User;
 
 public interface UserService {
 

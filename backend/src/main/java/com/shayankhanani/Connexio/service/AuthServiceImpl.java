@@ -1,4 +1,4 @@
-package com.shayankhanani.Connexio.services;
+package com.shayankhanani.Connexio.service;
 
 import com.shayankhanani.Connexio.DTO.Auth.LoginDTO;
 import com.shayankhanani.Connexio.DTO.Auth.LoignRespDTO;
@@ -14,9 +14,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.KeyGenerator;
-import javax.crypto.SecretKey;
-import java.security.NoSuchAlgorithmException;
-import java.util.Base64;
 
 @Service
 @RequiredArgsConstructor

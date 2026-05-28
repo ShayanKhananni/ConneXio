@@ -4,12 +4,9 @@ package com.shayankhanani.Connexio.controller;
 import com.shayankhanani.Connexio.DTO.Auth.LoginDTO;
 import com.shayankhanani.Connexio.DTO.Auth.LoignRespDTO;
 import com.shayankhanani.Connexio.DTO.Auth.RegisterDTO;
-import com.shayankhanani.Connexio.repository.UserRepo;
-import com.shayankhanani.Connexio.services.AuthServiceImpl;
+import com.shayankhanani.Connexio.service.AuthServiceImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -43,6 +40,7 @@ public class AuthController {
     public ResponseEntity<LoignRespDTO> login(@RequestBody LoginDTO loginDTO) {
 
         LoignRespDTO response = authService.login(loginDTO);
+
         return ResponseEntity.ok(response);
     }
 

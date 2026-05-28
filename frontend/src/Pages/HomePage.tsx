@@ -1,8 +1,15 @@
+import ContactContainer from "@/Components/App/Contact/ContactContainer"
+import Header from "@/Components/App/Contact/Header"
+
+
 const HomePage = () => {
+
+
   return (
-    <div>
-      <h1>Home Page</h1>
-    </div>
+    <>
+        <Header/>
+        <ContactContainer/>    
+    </>
   )
 }
 

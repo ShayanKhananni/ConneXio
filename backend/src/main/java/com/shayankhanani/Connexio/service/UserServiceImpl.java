@@ -1,11 +1,10 @@
-package com.shayankhanani.Connexio.services;
+package com.shayankhanani.Connexio.service;
 
 
 import com.shayankhanani.Connexio.DTO.User.AddUserDTO;
 import com.shayankhanani.Connexio.DTO.User.UserDTO;
 import com.shayankhanani.Connexio.entity.User;
 import com.shayankhanani.Connexio.repository.UserRepo;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;

@@ -1,11 +1,10 @@
 package com.shayankhanani.Connexio.DTO.Contact;
-import com.shayankhanani.Connexio.entity.Phone;
 import lombok.Data;
 
 import java.util.List;
 
 @Data
-public class ContactDTO {
+public class ContactDetailDTO {
 
     private Long contactId;
     private String firstName;

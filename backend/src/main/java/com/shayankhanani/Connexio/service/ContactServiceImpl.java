@@ -1,11 +1,8 @@
-package com.shayankhanani.Connexio.services;
-
-
+package com.shayankhanani.Connexio.service;
 import com.shayankhanani.Connexio.DTO.Contact.*;
-import com.shayankhanani.Connexio.entity.Contact;
-import com.shayankhanani.Connexio.entity.Email;
-import com.shayankhanani.Connexio.entity.Phone;
-import com.shayankhanani.Connexio.entity.Userprincipal;
+import com.shayankhanani.Connexio.DTO.Contact.Patch.*;
+import com.shayankhanani.Connexio.DTO.Contact.Patch.UpdatePhoneDTO;
+import com.shayankhanani.Connexio.entity.*;
 import com.shayankhanani.Connexio.exception.ResourceNotFoundException;
 import com.shayankhanani.Connexio.exception.contact.DuplicateEmailException;
 import com.shayankhanani.Connexio.exception.contact.DuplicatePhoneException;
@@ -17,6 +14,9 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -32,11 +32,6 @@ public class ContactServiceImpl implements ContactService {
     private final EmailRepo emailRepo;
     private final PhoneRepo phoneRepo;
     private static final Logger logger = LoggerFactory.getLogger(ContactServiceImpl.class);
-
-
-
-
-
 
 
     @Override
@@ -66,67 +61,67 @@ public class ContactServiceImpl implements ContactService {
     }
 
 
-
-
-
     @Transactional
     @Override
-    public ContactDetailDTO addContact(AddedContactDTO addedContactDTO, Userprincipal owner) {
+    public ContactDetailDTO addContact(AddedContactDTO dto, Userprincipal owner) {
 
-        Set<String> seen = new HashSet<>(addedContactDTO.getPhones());
+        Set<String> emailSet = dto.getEmails().stream()
+                .map(e -> e.getEmail().trim().toLowerCase())
+                .collect(Collectors.toSet());
 
-        if (seen.size() != addedContactDTO.getPhones().size()) {
-            throw new DuplicatePhoneException("Duplicate phone number for contact");
+        if (emailSet.size() != dto.getEmails().size()) {
+            throw new DuplicateEmailException("Duplicate email found");
         }
 
-        seen = new HashSet<>(addedContactDTO.getEmails());
+        Set<String> phoneSet = dto.getPhones().stream()
+                .map(p -> p.getPhone().trim())
+                .collect(Collectors.toSet());
 
-        if (seen.size() != addedContactDTO.getPhones().size()) {
-            throw new DuplicateEmailException("Duplicate email for contact");
+        if (phoneSet.size() != dto.getPhones().size()) {
+            throw new DuplicatePhoneException("Duplicate phone number found");
         }
 
-        Contact newContact = modelMapper.map(addedContactDTO,Contact.class);
-        newContact.setOwner(owner.getUser());
+        Contact contact = modelMapper.map(dto, Contact.class);
+        contact.setOwner(owner.getUser());
 
-
-        List<Phone> phoneEntities = addedContactDTO.getPhones().stream()
-                .map(phoneData -> {
+        List<Phone> phoneEntities = dto.getPhones().stream()
+                .map(p -> {
                     Phone phone = new Phone();
-                    phone.setPhone(phoneData);
-                    phone.setContact(newContact);
+                    phone.setPhone(p.getPhone());
+                    phone.setLabel(p.getLabel());
+                    phone.setContact(contact);
                     return phone;
-                }).toList();
+                })
+                .collect(Collectors.toList());
 
-        List<Email> emailEntities = addedContactDTO.getEmails().stream()
-                .map(emailData -> {
+        List<Email> emailEntities = dto.getEmails().stream()
+                .map(e -> {
                     Email email = new Email();
-                    email.setEmail(emailData);
-                    email.setContact(newContact);
+                    email.setEmail(e.getEmail());
+                    email.setLabel(e.getLabel());
+                    email.setContact(contact);
                     return email;
-                }).toList();
+                })
+                .collect(Collectors.toList());
 
-          newContact.setPhones(phoneEntities);
-          newContact.setEmails(emailEntities);
 
-            Contact savedContact = contactRepo.save(newContact);
-            ContactDetailDTO contactDTO = new ContactDetailDTO();
-            modelMapper.map(savedContact,contactDTO);
-            contactDTO.setContactId(savedContact.getContactId());
-            return contactDTO;
+        contact.setPhones(phoneEntities);
+        contact.setEmails(emailEntities);
 
+        Contact saved = contactRepo.save(contact);
+        return modelMapper.map(saved, ContactDetailDTO.class);
     }
 
 
     @Transactional
     @Override
     public ContactDetailDTO updateContactInfo(Long id,
-                                              UpdateContactInfoDTO dto,
+                                              UpdateContactDTO dto,
                                               Userprincipal owner) {
 
         Contact contact = contactRepo.findByContactIdAndOwner(id, owner.getUser())
                 .orElseThrow(() ->
                         new ResourceNotFoundException("Contact not found!!"));
-
 
         if (dto.getFirstName() != null) {
             contact.setFirstName(dto.getFirstName());
@@ -146,89 +141,232 @@ public class ContactServiceImpl implements ContactService {
         if (dto.getFacebookUrl() != null) {
             contact.setFacebookUrl(dto.getFacebookUrl());
         }
-
-
-        if (dto.getEmailUpdates() != null && !dto.getEmailUpdates().isEmpty()) {
-            updateEmails(contact, dto.getEmailUpdates());
+        if (dto.getEmailUpdates() != null) {
+            patchEmails(contact,dto.getEmailUpdates());
+        }
+        if (dto.getPhoneUpdates() != null) {
+            patchPhones(contact, dto.getPhoneUpdates());
         }
 
-        if (dto.getPhoneUpdates() != null && !dto.getPhoneUpdates().isEmpty()) {
-            updatePhones(contact, dto.getPhoneUpdates());
-        }
         Contact updated = contactRepo.save(contact);
 
         return modelMapper.map(updated, ContactDetailDTO.class);
 
     }
-    @Transactional
-    @Override
-    public void updatePhones(Contact contact,
-                             List<UpdatePhoneDTO> updates) {
 
-        List<Long> ids = updates.stream()
-                .map(UpdatePhoneDTO::getId)
+
+
+    @Override
+    public void patchEmails(Contact contact, List<UpdateEmailDTO> emailUpdates) {
+
+        // 1. duplicate check in request
+        Set<String> seen = new HashSet<>();
+        boolean hasDuplicate = emailUpdates.stream()
+                .map(UpdateEmailDTO::getEmail)
                 .filter(Objects::nonNull)
+                .map(String::toLowerCase)
+                .anyMatch(email -> !seen.add(email));
+
+        if (hasDuplicate) {
+            throw new IllegalArgumentException("Duplicate emails found in request");
+        }
+
+        // 2. split create vs update
+        List<UpdateEmailDTO> emailsToAdd = emailUpdates.stream()
+                .filter(e -> e.getId() == null)
                 .toList();
 
-        Map<Long, Phone> existingPhones = phoneRepo
-                .findAllByIdInAndContact(ids, contact)
-                .stream()
+        List<UpdateEmailDTO> emailsToUpdate = emailUpdates.stream()
+                .filter(e -> e.getId() != null)
+                .toList();
+
+
+        if (!emailsToAdd.isEmpty()) {
+            createEmails(
+                    contact,
+                    emailsToAdd.stream().map(UpdateEmailDTO::getEmail).toList(),
+                    emailsToAdd
+            );
+        }
+
+        if (!emailsToUpdate.isEmpty()) {
+            updateEmails(
+                    contact,
+                    emailsToUpdate,
+                    emailsToUpdate.stream().map(UpdateEmailDTO::getId).toList()
+            );
+        }
+    }
+
+    private void createEmails(
+            Contact contact,
+            List<String> emails,
+            List<UpdateEmailDTO> emailstoAdd
+    ) {
+
+        List<Email> existingEmails =
+                emailRepo.findByContactAndEmailIn(contact, emails);
+
+        if (!existingEmails.isEmpty()) {
+            throw new DuplicateEmailException(
+                    "Email Already Exists: " +
+                            existingEmails.get(0).getEmail()
+            );
+        }
+
+        List<Email> newEmails = emailstoAdd.stream()
+                .map(dto -> {
+                    Email email = new Email();
+                    email.setContact(contact);
+                    email.setEmail(dto.getEmail());
+                    email.setLabel(dto.getLabel());
+                    return email;
+                })
+                .toList();
+
+        emailRepo.saveAll(newEmails);
+    }
+
+
+    private void updateEmails(
+            Contact contact,
+            List<UpdateEmailDTO> updates,
+            List<Long> updateIds
+    ) {
+
+        List<Email> existingEmails =
+                emailRepo.findAllByIdInAndContact(updateIds, contact);
+
+        if (existingEmails.size() != updateIds.size()) {
+            throw new ResourceNotFoundException("emails not found");
+        }
+
+        Map<Long, Email> emailMap = existingEmails.stream()
+                .collect(Collectors.toMap(Email::getId, e -> e));
+
+        for (UpdateEmailDTO dto : updates) {
+
+            Email email = emailMap.get(dto.getId());
+
+            if (email != null) {
+
+                if (dto.getEmail() != null) {
+                    email.setEmail(dto.getEmail());
+                }
+
+                if (dto.getLabel() != null) {
+                    email.setLabel(dto.getLabel());
+                }
+            }
+        }
+
+        emailRepo.saveAll(existingEmails);
+    }
+
+
+
+    @Override
+    public void patchPhones(Contact contact, List<UpdatePhoneDTO> phoneUpdates) {
+
+        // 1. duplicate check in request
+        Set<String> seen = new HashSet<>();
+        boolean hasDuplicate = phoneUpdates.stream()
+                .map(UpdatePhoneDTO::getPhone)
+                .filter(Objects::nonNull)
+                .map(String::toLowerCase)
+                .anyMatch(phone -> !seen.add(phone));
+
+        if (hasDuplicate) {
+            throw new IllegalArgumentException("Duplicate phones found in request");
+        }
+
+        // 2. split create vs update
+        List<UpdatePhoneDTO> phonesToAdd = phoneUpdates.stream()
+                .filter(p -> p.getId() == null)
+                .toList();
+
+        List<UpdatePhoneDTO> phonesToUpdate = phoneUpdates.stream()
+                .filter(p -> p.getId() != null)
+                .toList();
+
+        if (!phonesToAdd.isEmpty()) {
+            createPhones(
+                    contact,
+                    phonesToAdd.stream().map(UpdatePhoneDTO::getPhone).toList(),
+                    phonesToAdd
+            );
+        }
+
+        if (!phonesToUpdate.isEmpty()) {
+            updatePhones(
+                    contact,
+                    phonesToUpdate,
+                    phonesToUpdate.stream().map(UpdatePhoneDTO::getId).toList()
+            );
+        }
+    }
+
+    private void createPhones(
+            Contact contact,
+            List<String> phones,
+            List<UpdatePhoneDTO> phonesToAdd
+    ) {
+
+        List<Phone> existingPhones =
+                phoneRepo.findByContactAndPhoneIn(contact, phones);
+
+        if (!existingPhones.isEmpty()) {
+            throw new DuplicatePhoneException(
+                    "Phone Already Exists: " +
+                            existingPhones.get(0).getPhone()
+            );
+        }
+
+        List<Phone> newPhones = phonesToAdd.stream()
+                .map(dto -> {
+                    Phone phone = new Phone();
+                    phone.setContact(contact);
+                    phone.setPhone(dto.getPhone());
+                    phone.setLabel(dto.getLabel());
+                    return phone;
+                })
+                .toList();
+
+        phoneRepo.saveAll(newPhones);
+    }
+
+    private void updatePhones(
+            Contact contact,
+            List<UpdatePhoneDTO> updates,
+            List<Long> updateIds
+    ) {
+        List<Phone> existingPhones =
+                phoneRepo.findAllByIdInAndContact(updateIds, contact);
+
+        if (existingPhones.size() != updateIds.size()) {
+            throw new ResourceNotFoundException("phone not found");
+        }
+
+        Map<Long, Phone> phoneMap = existingPhones.stream()
                 .collect(Collectors.toMap(Phone::getId, p -> p));
-
-
-        List<Phone> toInsert = new ArrayList<>();
-        List<Phone> toUpdate = new ArrayList<>();
-        List<Phone> toDelete = new ArrayList<>();
 
         for (UpdatePhoneDTO dto : updates) {
 
-            // CREATE
-            if (dto.getId() == null) {
+            Phone phone = phoneMap.get(dto.getId());
 
-                Phone phone = new Phone();
-                phone.setPhone(dto.getPhone());
-                phone.setContact(contact);
+            if (phone != null) {
 
-                toInsert.add(phone);
-                continue;
-            }
+                if (dto.getPhone() != null) {
+                    phone.setPhone(dto.getPhone());
+                }
 
-            // validate ownership + existence
-            Phone existing = existingPhones.get(dto.getId());
-
-            if (existing == null) {
-                throw new ResourceNotFoundException(
-                        String.format("Phone with id not found: %d", dto.getId()));
-
-            }
-
-
-            // DELETE
-            if (Boolean.TRUE.equals(dto.getDelete())) {
-                toDelete.add(existing);
-            }
-
-            // UPDATE
-            else {
-                existing.setPhone(dto.getPhone());
-                toUpdate.add(existing);
+                if (dto.getLabel() != null) {
+                    phone.setLabel(dto.getLabel());
+                }
             }
         }
-        if (!toInsert.isEmpty()) {
-            phoneRepo.saveAll(toInsert);
-        }
 
-        if (!toUpdate.isEmpty()) {
-            phoneRepo.saveAll(toUpdate);
-        }
-
-        if (!toDelete.isEmpty()) {
-
-            phoneRepo.deleteByIdIn(
-                    toDelete.stream()
-                            .map(Phone::getId)
-                            .toList());
-        }
+        phoneRepo.saveAll(existingPhones);
     }
 
 
@@ -240,77 +378,28 @@ public class ContactServiceImpl implements ContactService {
     }
 
 
-    @Transactional
+
     @Override
-    public void updateEmails(Contact contact,
-                             List<UpdateEmailDTO> updates) {
+    public Page<ContactInfoDTO> getPagedContacts(Userprincipal owner, Pageable pageable, String search) {
 
-        List<Long> ids = updates.stream()
-                .map(UpdateEmailDTO::getId)
-                .filter(Objects::nonNull)
-                .toList();
+        Page<Contact> contacts;
 
-        Map<Long, Email> existingEmails = emailRepo
-                .findAllByIdInAndContact(ids, contact)
-                .stream()
-                .collect(Collectors.toMap(Email::getId, e -> e));
-
-        List<Email> toInsert = new ArrayList<>();
-        List<Email> toUpdate = new ArrayList<>();
-        List<Email> toDelete = new ArrayList<>();
-
-        for (UpdateEmailDTO dto : updates) {
-
-            // CREATE
-            if (dto.getId() == null) {
-
-                Email email = new Email();
-                email.setEmail(dto.getEmail());
-                email.setContact(contact);
-
-                toInsert.add(email);
-                continue;
-            }
-
-            // validate ownership + existence
-            Email existing = existingEmails.get(dto.getId());
-
-            if (existing == null) {
-                throw new ResourceNotFoundException(
-                        String.format("Email with id not found: %d", dto.getId()));
-            }
-
-
-            System.out.println(Boolean.TRUE.equals(dto.getDelete()));
-
-            // DELETE
-            if (Boolean.TRUE.equals(dto.getDelete())) {
-                toDelete.add(existing);
-            }
-
-            // UPDATE
-            else {
-                existing.setEmail(dto.getEmail());
-                toUpdate.add(existing);
-            }
+        if(search == null)
+        {
+             return contactRepo.findContactByOwner(owner.getUser(), pageable).map(contact ->
+                     modelMapper.map(contact, ContactInfoDTO.class)
+             );
         }
 
-        if (!toInsert.isEmpty()) {
-            emailRepo.saveAll(toInsert);
-        }
+        /// searching By firstname
 
-        if (!toUpdate.isEmpty()) {
-            emailRepo.saveAll(toUpdate);
-        }
+        return contactRepo.searchContacts(owner.getUser(), search, pageable).map(contact ->
+                modelMapper.map(contact, ContactInfoDTO.class)
+        );
 
-        if (!toDelete.isEmpty()) {
-            emailRepo.deleteByIdIn(
-                    toDelete.stream()
-                            .map(Email::getId)
-                            .toList()
-            );
-
-        }
     }
+
+
+
 
 }

@@ -1,7 +1,7 @@
 package com.shayankhanani.Connexio.filters;
 
-import com.shayankhanani.Connexio.services.JWTService;
-import com.shayankhanani.Connexio.services.MyUserDetailsService;
+import com.shayankhanani.Connexio.service.JWTService;
+import com.shayankhanani.Connexio.service.MyUserDetailsService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -26,7 +26,6 @@ public class JwtFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        // Bearer: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJOYXZlZWQiLCJpYXQiOjE3Nzg0MTI1NTYsImV4cCI6MTc3ODQxMjY2NH0.TdGEOf8fdRqD328pGir_K9ANjBvRLFsAGfGvEFUZGsQ
         String authHeader = request.getHeader("Authorization");
         String token = null;
         String username = null;

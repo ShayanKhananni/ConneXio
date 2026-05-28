@@ -27,7 +27,6 @@ export const updateContactApi = async (
 };
 
 
-
 export const addContactApi = async (
   contact: CreateContactForm
 ) => {
@@ -36,5 +35,10 @@ export const addContactApi = async (
 };
 
 
-
+export const getPagedContacts = async (pageNum: number, pageSize: number, search: String)  => {
+  const res = await api.get(
+    `/contact/paged?pageNum=${pageNum}&pageSize=${pageSize}&search=${search}`
+  );
+  return res.data;
+};
 

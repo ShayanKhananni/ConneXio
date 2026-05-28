@@ -1,7 +1,7 @@
 package com.shayankhanani.Connexio.config;
 
 
-import com.shayankhanani.Connexio.DTO.Contact.AddedContactDTO;
+import com.shayankhanani.Connexio.DTO.Contact.ContactDetailDTO;
 import com.shayankhanani.Connexio.entity.Contact;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
@@ -14,11 +14,11 @@ public class MapperConfig {
     public ModelMapper modelMapper() {
         ModelMapper modelMapper = new ModelMapper();
 
-        modelMapper.typeMap(AddedContactDTO.class, Contact.class)
-                .addMappings(mapper -> {
-                    mapper.skip(Contact::setPhones);
-                    mapper.skip(Contact::setEmails);
-                });
+        modelMapper.typeMap(Contact.class, ContactDetailDTO.class)
+                .addMappings(mapper ->
+                        mapper.map(src -> src.getLinkedUser().getUserId(),
+                                ContactDetailDTO::setLinkedUserId)
+                );
 
         return modelMapper;
     }

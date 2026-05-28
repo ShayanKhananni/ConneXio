@@ -6,5 +6,5 @@ import java.util.List;
 
 @Data
 public class UserContactListDTO {
-    List<ContactDTO> contacts;
+    List<ContactDetailDTO> contacts;
 }

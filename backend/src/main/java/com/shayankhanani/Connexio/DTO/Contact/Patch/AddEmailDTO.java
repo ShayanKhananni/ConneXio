@@ -1,4 +1,9 @@
 package com.shayankhanani.Connexio.DTO.Contact.Patch;
 
-public class CreateEmailDTO {
+import lombok.Data;
+
+@Data
+public class AddEmailDTO {
+    private String email;
+    private String label;
 }

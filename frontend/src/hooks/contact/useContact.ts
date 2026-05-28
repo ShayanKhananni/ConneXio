@@ -1,4 +1,4 @@
-import { addContactApi, deletContactApi, getContactDetails, getContacts, updateContactApi } from "@/api/contactApi"
+import { addContactApi, deletContactApi, getContactDetails, getContacts, getPagedContacts, updateContactApi } from "@/api/contactApi"
 import type { ContatcInfo } from "@/types/contactTypes";
 import type { CreateContactForm, UpdateContactForm } from "@/types/UpdateContactType"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
@@ -13,41 +13,63 @@ export const useContacts = () => {
 }
 
 
+export const usePagedContacts = (
+  pageNumber: number,
+  pageSize: number,
+  search: string
+) => {
+  return useQuery({
+    queryKey: [
+      "contacts",
+      pageNumber,
+      pageSize,
+      search,
+    ],
+
+    queryFn: () =>
+      getPagedContacts(
+        pageNumber,
+        pageSize,
+        search
+      ),
+
+    placeholderData: (prev) => prev,
+
+    enabled:
+      search.length === 0 ||
+      search.length >= 3,
+  });
+};
 
 
 export const useAddContact = () => {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
-    mutationFn: (data: any) => addContactApi(data),
-    onSuccess: (newContact) => {
-      queryClient.setQueryData<ContatcInfo[]>(
-        ["contacts"],
-        (old = []) => {
-          return [newContact, ...old];
-        }
-      );
+    mutationFn: addContactApi,
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["contacts"],
+      });
     },
   });
 };
 
 
-
-// Getting Contact-Details for Specific Contact
 export const useDeleteContact = () => {
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: deletContactApi,
-    
-    onSuccess: (_, deletedId) => {
-      queryClient.setQueryData(["contacts"], (old: any) => {
-        return old?.filter((c: any) => c.contactId !== deletedId)
-      })
-    },
 
-  })
-}
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["contacts"],
+      });
+    },
+  });
+};
 
 export const useContactDetails = (
   id: number | null,
@@ -72,6 +94,7 @@ export const useContactDetails = (
 export const useUpdateContact = () => {
   const queryClient = useQueryClient();
 
+  
   return useMutation({
     mutationFn: ({ id, data }: { id: number; data: UpdateContactForm }) =>
       updateContactApi(id, data),
@@ -79,29 +102,17 @@ export const useUpdateContact = () => {
     onSuccess: (updatedContact, variables) => {
       const id = variables.id;
 
-      // 1. Update detail cache
-      queryClient.setQueryData(["contact", id], updatedContact);
 
+      // 1. update detail page cache
+      queryClient.setQueryData(
+        ["contact", id],
+        updatedContact
+      );
 
-      // 2. Update list cache
-      queryClient.setQueryData(["contacts"], (old : ContatcInfo[] ) => {
-        if (!old) return old;
-      
-        return old.map((c) => {
-          if (c.contactId !== id) return c;
-      
-          return {
-            ...c,
-            firstName: updatedContact.firstName,
-            lastName: updatedContact.lastName,
-            linkedinUrl: updatedContact.linkedinUrl,
-            instagramUrl: updatedContact.instagramUrl,
-            facebookUrl: updatedContact.facebookUrl,
-            profileImageUrl: updatedContact.profileImageUrl,
-          };
-        });
+      // 2. invalidate all list caches
+      queryClient.invalidateQueries({
+        queryKey: ["contacts"],
       });
-
     },
   });
 };

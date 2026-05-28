@@ -28,8 +28,8 @@ public class Phone {
     private Long id;
     private String phone;
 
-//    @Column(nullable = false)
-//    private String label;
+    @Column(nullable = false)
+    private String label;
 
     @ManyToOne
     @JoinColumn(name = "contact_id", nullable = false)

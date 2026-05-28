@@ -1,38 +1,47 @@
-import { StrictMode } from "react";
+import React, { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import ProtectedRoute from "./Components/ProtectedRoute";
 import HomePage from "./Pages/HomePage";
 import LoginPage from "./Pages/LoginPage";
 import SignupPage from "./Pages/SignupPage";
-import AuthProvider from "./Components/AuthProvider";
-
-
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import ProtectedRoute from "./Components/App/ProtectedRoute";
+import AuthRoute from "./Components/App/AuthRoute";
 
 const router = createBrowserRouter([
   {
-    element: <ProtectedRoute />,
+    element: <ProtectedRoute />, // ← wrap protected routes with this
     children: [
       {
-        path: "/home",
+        path: "/",
         element: <HomePage />,
       },
     ],
   },
+
   {
-    path: "/login",
-    element: <LoginPage />,
-  },
-  {
-    path: "/signup",
-    element: <SignupPage />,
+    element: <AuthRoute />,
+    children: [
+      {
+        path: "/login",
+        element: <LoginPage />,
+      },
+      {
+        path: "/signup",
+        element: <SignupPage />,
+      },
+    ],
   },
 ]);
 
+const queryClient = new QueryClient();
+
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <AuthProvider>
+    <QueryClientProvider client={queryClient}>
       <RouterProvider router={router} />
-    </AuthProvider>
+      <ReactQueryDevtools /> {/* remove in production */}
+    </QueryClientProvider>
   </StrictMode>
 );

@@ -1,5 +1,7 @@
 package com.shayankhanani.Connexio.DTO.Contact;
 
+import com.shayankhanani.Connexio.DTO.Contact.Patch.AddEmailDTO;
+import com.shayankhanani.Connexio.DTO.Contact.Patch.AddPhoneDTO;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
@@ -31,10 +33,9 @@ public class AddedContactDTO {
     private String facebookUrl;
 
     @NotEmpty
-    private List<@Email(message = "Invalid email format") String> emails;
-
+    private List<AddEmailDTO> emails;
     @NotEmpty
-    private List<@NotBlank(message = "Phone cannot be blank") String> phones;
+    private List<AddPhoneDTO> phones;
 }
 
 

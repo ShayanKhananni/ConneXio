@@ -1,6 +1,7 @@
 package com.shayankhanani.Connexio.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -18,6 +19,7 @@ import java.util.List;
 
 
 @Data
+
 public class Contact {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -50,7 +52,6 @@ public class Contact {
             CascadeType.REMOVE
     })
     private List<Email> emails = new ArrayList<>();
-
 
 
     private LocalDateTime createdAt = LocalDateTime.now();

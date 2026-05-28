@@ -14,9 +14,8 @@ public interface PhoneRepo extends JpaRepository<Phone,Long> {
 
 
     List<Phone> findAllByIdInAndContact(List<Long> ids, Contact contact);
+    List<Phone> findByContactAndPhoneIn(Contact contact, List<String> phones);
 
-    @Modifying
-    @Query("DELETE FROM Phone p WHERE p.id IN :ids")
-    void deleteByIdIn(@Param("ids") List<Long> ids);
+
 
 }

@@ -13,9 +13,7 @@ import java.util.List;
 public interface EmailRepo extends JpaRepository<Email,Long> {
 
     List<Email> findAllByIdInAndContact(List<Long> ids, Contact contact);
-    @Modifying
-    @Query("DELETE FROM Email e WHERE e.id IN :ids")
-    void deleteByIdIn(@Param("ids") List<Long> ids);
+    List<Email> findByContactAndEmailIn(Contact contact, List<String> emails);
 
 
 }

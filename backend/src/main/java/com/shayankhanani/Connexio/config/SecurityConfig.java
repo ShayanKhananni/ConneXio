@@ -2,7 +2,7 @@ package com.shayankhanani.Connexio.config;
 
 
 import com.shayankhanani.Connexio.filters.JwtFilter;
-import com.shayankhanani.Connexio.services.MyUserDetailsService;
+import com.shayankhanani.Connexio.service.MyUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -49,7 +49,6 @@ public class SecurityConfig {
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
-//        .formLogin(Customizer.withDefaults());
     }
 
 
@@ -67,7 +66,8 @@ public class SecurityConfig {
                 "POST",
                 "PUT",
                 "DELETE",
-                "OPTIONS"
+                "OPTIONS",
+                "PATCH"
         ));
 
         configuration.setAllowedHeaders(List.of("*"));
