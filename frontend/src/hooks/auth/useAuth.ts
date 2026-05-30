@@ -13,8 +13,7 @@ export const useLogin = (setError: UseFormSetError<LoginCredentials>) => {
     mutationFn: loginApi,
 
     onSuccess: (data) => {
-      console.log(data);
-      setToken(data.token);
+      setToken(data.token)
     },
     
     onError: (error:any) => 
@@ -25,6 +24,7 @@ export const useLogin = (setError: UseFormSetError<LoginCredentials>) => {
     }
   })
 }
+
 
 
 export const useSignup = (setError: UseFormSetError<RegisterCredentials>) =>

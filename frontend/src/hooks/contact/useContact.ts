@@ -4,7 +4,6 @@ import type { CreateContactForm, UpdateContactForm } from "@/types/UpdateContact
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 
 
-
 export const useContacts = () => {
   return useQuery<ContatcInfo[]>({
     queryKey: ["contacts"],
@@ -34,6 +33,7 @@ export const usePagedContacts = (
       ),
 
     placeholderData: (prev) => prev,
+    staleTime: 1000 * 60 * 5, 
 
     enabled:
       search.length === 0 ||

@@ -1,16 +1,13 @@
-import ContactContainer from "@/Components/App/Contact/ContactContainer"
-import Header from "@/Components/App/Contact/Header"
-
+import ContactContainer from "@/Components/App/Contact/ContactContainer";
+import Header from "@/Components/App/User/Header";
 
 const HomePage = () => {
-
-
   return (
     <>
-        <Header/>
-        <ContactContainer/>    
+      <Header />
+      <ContactContainer />
     </>
-  )
-}
+  );
+};
 
-export default HomePage
+export default HomePage;

@@ -17,6 +17,7 @@ import ContactSearcher from "./ContactSearcher";
 
 type ActiveDialog = "info" | "update" | "delete" | "create" | null;
 
+
 const ContactContainer = () => {
 
 
@@ -29,7 +30,6 @@ const ContactContainer = () => {
   const [pageSize] = useState(6);
 
   const [openDeleteDialog, setDeleteOpen] = useState(false);
-
 
 
 

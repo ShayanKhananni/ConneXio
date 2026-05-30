@@ -6,8 +6,8 @@ import LoginPage from "./Pages/LoginPage";
 import SignupPage from "./Pages/SignupPage";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import ProtectedRoute from "./Components/App/ProtectedRoute";
-import AuthRoute from "./Components/App/AuthRoute";
+import ProtectedRoute from "./Components/App/AuthGuards/ProtectedRoute";
+import AuthRoute from "./Components/App/AuthGuards/AuthRoute";
 
 const router = createBrowserRouter([
   {
@@ -41,7 +41,7 @@ createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
       <RouterProvider router={router} />
-      <ReactQueryDevtools /> {/* remove in production */}
+      <ReactQueryDevtools /> 
     </QueryClientProvider>
   </StrictMode>
 );

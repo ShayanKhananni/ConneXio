@@ -22,10 +22,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import {
   createContactSchema,
   type CreateContactForm,
-} from "@/types/UpdateContactType";
+} from "@/zod/contactSchema";
 
-import { useAddContact, useUpdateContact } from "@/hooks/contact/useContact";
-import { da } from "zod/v4/locales";
+import { useAddContact } from "@/hooks/contact/useContact";
+
 
 type Props = {
   open: boolean;

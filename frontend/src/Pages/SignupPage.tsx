@@ -6,48 +6,24 @@ import { z } from "zod";
 
 import { Button } from "../Components/ui/button";
 import { Field, FieldError, FieldLabel } from "../Components/ui/field";
-import { InputGroup, InputGroupAddon, InputGroupInput } from "../Components/ui/input-group";
-import { registerApi } from "@/api/authApi";
-import { useMutation } from "@tanstack/react-query";
-import { useAuthStore } from "../store/authStore";
-import { useNavigate } from "react-router-dom";
-import { useSignup } from "@/hooks/auth/useAuth";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+} from "../Components/ui/input-group";
 
+import { Link } from "react-router-dom";
+import { useSignup } from "@/hooks/auth/useAuth";
+import { registerSchema, type SignupCredentials } from "@/zod/authSchema";
 
 const SignupPage = () => {
-
   const [showPassword, setShowPassword] = useState(false);
-  const { setToken } = useAuthStore();
-  const navigate = useNavigate();
 
+  type FormFields = z.infer<typeof registerSchema>;
 
-  type FormFields = z.infer<typeof schema>;
-  
-const schema = z.object({
-  username: z
-    .string()
-    .nonempty("Username is required")
-    .min(5, "Username must be at least 5 characters"),
-  email: z         
-  .string()            
-    .nonempty("Email is required")
-    .email("Invalid email address"), 
-
-  phone: z
-    .string()
-    .nonempty("Phone is required")
-    .min(10, "Phone must be at least 10 digits")
-    .regex(/^\+?[0-9]+$/, "Invalid phone number"),
-  password: z
-    .string()
-    .nonempty("Password is required")
-    .min(8, "Password must be at least 8 characters"),
-});
-
-
- useForm<FormFields>({
-  resolver: zodResolver(schema),
-});
+  useForm<SignupCredentials>({
+    resolver: zodResolver(registerSchema),
+  });
 
   const {
     register,
@@ -56,17 +32,15 @@ const schema = z.object({
     formState: { errors },
   } = useForm<FormFields>({
     defaultValues: { username: "", phone: "", password: "" },
-    resolver: zodResolver(schema),
+    resolver: zodResolver(registerSchema),
   });
 
   const { mutate: signup, isPending } = useSignup(setError);
 
-  const handleOnSignup: SubmitHandler<FormFields> = (data) => {
+  const handleOnSignup: SubmitHandler<SignupCredentials> = (data) => {
     signup(data);
   };
 
-
-  
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-100 via-white to-violet-200 px-4">
       <div className="w-full max-w-md bg-white shadow-2xl rounded-2xl p-8 border border-purple-100">
@@ -76,8 +50,7 @@ const schema = z.object({
         </div>
 
         <form onSubmit={handleSubmit(handleOnSignup)} className="space-y-5">
-
-          <Field data-invalid={!!errors.username}>
+          <Field>
             <FieldLabel>Username</FieldLabel>
             <InputGroup>
               <InputGroupAddon>
@@ -91,7 +64,7 @@ const schema = z.object({
             {errors.username && <FieldError errors={[errors.username]} />}
           </Field>
 
-          <Field data-invalid={!!errors.email}>
+          <Field>
             <FieldLabel>Email</FieldLabel>
             <InputGroup>
               <InputGroupAddon>
@@ -105,8 +78,7 @@ const schema = z.object({
             {errors.email && <FieldError errors={[errors.email]} />}
           </Field>
 
-
-          <Field data-invalid={!!errors.phone}>
+          <Field>
             <FieldLabel>Phone</FieldLabel>
             <InputGroup>
               <InputGroupAddon>
@@ -120,7 +92,7 @@ const schema = z.object({
             {errors.phone && <FieldError errors={[errors.phone]} />}
           </Field>
 
-          <Field data-invalid={!!errors.password}>
+          <Field>
             <FieldLabel>Password</FieldLabel>
             <InputGroup>
               <InputGroupAddon>
@@ -153,6 +125,17 @@ const schema = z.object({
           >
             {isPending ? "Creating account..." : "Sign Up"}
           </Button>
+
+          {/* Signup link */}
+          <p className="text-center text-sm text-gray-500 mt-4">
+            Already have an account?{" "}
+            <Link
+              to="/login"
+              className="text-purple-600 hover:underline font-medium"
+            >
+              Login
+            </Link>
+          </p>
 
           {errors.root && (
             <p className="text-red-500 text-sm text-center">

@@ -21,13 +21,15 @@ import { useForm, useFieldArray, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { type Contact } from "@/types/contactTypes";
+
+
 import {
   updateContactSchema,
-  type UpdateContactForm,
-} from "@/types/UpdateContactType";
+  type UpdateContactForm 
+} from "@/zod/contactSchema";
+
 
 import { useUpdateContact } from "@/hooks/contact/useContact";
-
 
 
 type ContactUpdateDialogProps = {

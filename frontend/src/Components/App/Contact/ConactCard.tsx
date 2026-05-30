@@ -13,7 +13,6 @@ type Props = {
 
 const ContactCard = ({ contact, onDelete, onInfo, onUpdate }: Props) => {
 
-
   return (
     <div className="bg-white rounded-xl shadow-lg p-4 w-full  border border-gray-200 select-none">
       {/* Header */}
@@ -51,6 +50,7 @@ const ContactCard = ({ contact, onDelete, onInfo, onUpdate }: Props) => {
 
       {/* Mutual + Social */}
       <div className="mb-4 flex items-center justify-between">
+
         <div className="flex items-center">
           {/* Avatar 1 */}
           <img
@@ -72,8 +72,10 @@ const ContactCard = ({ contact, onDelete, onInfo, onUpdate }: Props) => {
             <Eye className="w-3.5 h-3.5 text-gray-600" />
           </button>
 
-          <p className="text-sm font-bold ms-3">3 Mutual Contacts</p>
+          <p className="text-sm font-bold ms-3">View Mutual Contacts</p>
         </div>
+
+        
 
         <div className="flex items-center">
           {contact.facebookUrl && (
