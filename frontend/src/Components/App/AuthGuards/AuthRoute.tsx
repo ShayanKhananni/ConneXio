@@ -1,5 +1,5 @@
 import { useAuthStore } from '@/store/authStore'
-import { Navigate, Outlet } from 'react-router-dom';  // ← remove unused React import
+import { Navigate, Outlet } from 'react-router-dom';  
 
 const AuthRoute = () => {
   const { token } = useAuthStore();

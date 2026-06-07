@@ -103,6 +103,8 @@ const ContactUpdateDialog = ({
 
 
   // Loading contact data into form when contact changes or dialog opens, and also close dialog on successful update
+
+  
   useEffect(() => {
     if (!contact) return;
     reset({
