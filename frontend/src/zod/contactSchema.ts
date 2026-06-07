@@ -20,8 +20,17 @@ export const phoneSchema = z.object({
 });
 
 export const createContactSchema = z.object({
-  firstName: z.string().nonempty("Firsname is required").min(2, "Too short").max(50, "Too long"),
-  lastName: z.string().nonempty("Lastname is required").min(2, "Too short").max(50, "Too long"),
+  firstName: z
+  .string()
+  .nonempty("Firstname is required")
+  .min(3, "At 3 Least Characters are required")
+  .max(20, "Max 10 cahracters are allowed"),
+lastName: z
+  .string()
+  .nonempty("Lastname is required")
+  .min(3, "At 3 Least Characters are required")
+  .max(11, "Max 10 cahracters are allowed"),
+
 
   linkedinUrl: urlField,
   instagramUrl: urlField,
@@ -29,12 +38,20 @@ export const createContactSchema = z.object({
   profileImageUrl: urlField,
 
   emails: z.array(emailSchema),
-  phones: z.array(phoneSchema)
+  phones: z.array(phoneSchema),
 });
 
 export const updateContactSchema = z.object({
-  firstName: z.string().min(2, "Too short").max(50, "Too long").optional(),
-  lastName: z.string().min(2, "Too short").max(50, "Too long").optional(),
+  firstName: z
+    .string()
+    .nonempty("Firstname is required")
+    .min(3, "At 3 Least Characters are required")
+    .max(20, "Max 10 cahracters are allowed"),
+  lastName: z
+    .string()
+    .nonempty("Lastname is required")
+    .min(3, "At 3 Least Characters are required")
+    .max(11, "Max 10 cahracters are allowed"),
 
   linkedinUrl: urlField,
   instagramUrl: urlField,
@@ -45,8 +62,5 @@ export const updateContactSchema = z.object({
   phoneUpdates: z.array(phoneSchema).optional(),
 });
 
-
-export type CreateContactForm = z.infer<typeof createContactSchema>
-export type UpdateContactForm = z.infer<typeof updateContactSchema>
-
-
+export type CreateContactForm = z.infer<typeof createContactSchema>;
+export type UpdateContactForm = z.infer<typeof updateContactSchema>;

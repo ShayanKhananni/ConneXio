@@ -1,5 +1,3 @@
-
-
 export interface UserDetails {
   phone: string;
   email: string;

@@ -18,11 +18,11 @@ export const phoneUtil = z
   
   export const passwordUtil = z
   .string()
-  .nonempty("Password is requried")
+  .nonempty("Password is required")
   .min(8, "Password must be at least 8 characters")
   .max(10, "Password must be at most 10 characters")
   .regex(
-    /^(?=.*[0-9])(?=.*[!@#$%^&*(),.?":{}|<>]).{8,10}$/,
-    "Password must contain at least 1 number and 1 special character"
-  )
+    /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>])/,
+    "Password must contain at least 1 uppercase letter, 1 number, and 1 special character"
+  );
 
