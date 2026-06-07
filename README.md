@@ -44,11 +44,12 @@ Connexio/
 git clone https://github.com/your-username/connexio.git
 cd connexio
 
-🖥️ Backend Setup (Spring Boot)
-📌 Step 2: Open Backend
+## 🖥️ Backend Setup (Spring Boot)
+
+### 📌 Step 2: Open Backend
 Open the backend/ folder in IntelliJ IDEA (Recommended)
 
-⚙️ Step 3: Configure Application Properties
+### ⚙️ Step 3: Configure Application Properties
 Update src/main/resources/application.properties:
 spring.application.name=Connexio
 
@@ -69,16 +70,16 @@ server.servlet.context-path=/api
 # JWT Secret
 jwt.secret=YOUR_JWT_SECRET
 
-Step 4: Database Setup
+### Step 4: Database Setup
 Create MySQL database:
 CREATE DATABASE connexio_schema;
 
 
-🔐 Step 5: Update Security Config
+### 🔐 Step 5: Update Security Config
 Inside:
 config/SecurityConfig.java
 Update allowed frontend origin:
 http://localhost:5173 (default)
 
-▶️ Step 6: Run Backend
+### ▶️ Step 6: Run Backend
 Backend runs at:http://localhost:8080/api
