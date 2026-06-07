@@ -34,7 +34,6 @@ Connexio/
 
 
 
-
 ---
 ## 🛠️ Installation & Setup Guide
 
@@ -46,10 +45,10 @@ cd connexio
 
 ## 🖥️ Backend Setup (Spring Boot)
 
-### 📌 Step 2: Open Backend
+## 📌 Step 2: Open Backend
 Open the backend/ folder in IntelliJ IDEA (Recommended)
 
-### ⚙️ Step 3: Configure Application Properties
+## ⚙️ Step 3: Configure Application Properties
 Update src/main/resources/application.properties:
 spring.application.name=Connexio
 
@@ -75,11 +74,11 @@ Create MySQL database:
 CREATE DATABASE connexio_schema;
 
 
-### 🔐 Step 5: Update Security Config
+## 🔐 Step 5: Update Security Config
 Inside:
 config/SecurityConfig.java
 Update allowed frontend origin:
 http://localhost:5173 (default)
 
-### ▶️ Step 6: Run Backend
+## ▶️ Step 6: Run Backend
 Backend runs at:http://localhost:8080/api
