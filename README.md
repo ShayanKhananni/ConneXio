@@ -194,5 +194,6 @@ The following columns are **optional**:
 3. Click the **Import CSV** button.
 4. Select your CSV file (you can use `frontend/csv/book.csv` as a starting point).
 5. Review the parsed preview and confirm the import.
+6. Make sure you format phone cells as Text for, phone numbers else it will import phone incorrectly 
 
 > ⚠️ **Note:** Make sure your CSV headers exactly match the column names listed above. The first row of the file must be the header row.
