@@ -4,18 +4,12 @@ import UserDropDown from "./UserDropDown";
 import UserProfile from "./UserProfile";
 import { useCurrentUser } from "@/hooks/user/users";
 
-
-
 const Header = () => {
-
-
   const [activeDialog, setActiveDialog] = useState<
     "profile" | "password" | null
   >(null);
 
-
   const { data: user, isLoading, error } = useCurrentUser();
-  
 
   // fallback initials
   const getInitials = (name: string) => {
@@ -32,13 +26,13 @@ const Header = () => {
       <header className="w-full lg:px-10 px-3 py-3 border-b bg-white flex items-center justify-between">
         {/* LEFT: LOGO */}
         <div className="flex items-center gap-2">
-          <img
+          {/* <img
             src="https://via.placeholder.com/40"
             alt="logo"
             className="w-10 h-10 rounded-md object-cover"
-          />
+          /> */}
 
-          <span className="font-semibold text-lg">MyApp</span>
+          <h1 className="text-3xl font-bold text-purple-700">ConneXio</h1>
         </div>
 
         {/* RIGHT: USER */}

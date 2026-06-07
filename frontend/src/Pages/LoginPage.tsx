@@ -14,6 +14,8 @@ import {
   InputGroupInput,
 } from "../Components/ui/input-group";
 
+
+
 type FormFields = LoginCredentials;
 
 const LoginPage = () => {
@@ -34,8 +36,12 @@ const LoginPage = () => {
     login(data);
   };
 
+
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-100 via-white to-violet-200 px-4">
+      
+
       <div className="w-full max-w-md bg-white shadow-2xl rounded-2xl p-8 border border-purple-100">
         <div className="mb-8 text-center">
           <h1 className="text-3xl font-bold text-purple-700">ConneXio</h1>

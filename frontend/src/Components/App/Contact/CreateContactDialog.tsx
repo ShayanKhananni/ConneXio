@@ -26,7 +26,6 @@ import {
 
 import { useAddContact } from "@/hooks/contact/useContact";
 
-
 type Props = {
   open: boolean;
   setActiveDialog: (open: any) => void;
@@ -39,14 +38,11 @@ const errorClass = "text-[12px] text-red-500 leading-none";
 
 const CreateContactDialog = ({ open, setActiveDialog, title }: Props) => {
 
-
-
   const {
     mutate: addContact,
     isPending,
     isSuccess,
   } = useAddContact();
-
 
   const {
     register,
@@ -96,14 +92,12 @@ const CreateContactDialog = ({ open, setActiveDialog, title }: Props) => {
   };
 
 
-
-
   const onSubmit: SubmitHandler<CreateContactForm> = async (data) => {
 
     const emails = getValidEmails(data);
     const phones = getValidPhones(data);
   
-  
+
     if (!emails.length) {
       setError("emails", { message: "At least one email is required" });
       return;
@@ -132,14 +126,14 @@ const CreateContactDialog = ({ open, setActiveDialog, title }: Props) => {
       )
     );
     payload = {...payload, emails, phones}
-    addContact(payload);
-    
-    };
+
+
+  addContact(payload, {
+    onSuccess: () => {
+      setActiveDialog(false);
+    },
+  });};
   
-    
-
-
-
   return (
     <Dialog
       open={open}
@@ -149,14 +143,10 @@ const CreateContactDialog = ({ open, setActiveDialog, title }: Props) => {
     >
       <DialogContent className="sm:max-w-xl p-4 select-none">
         <DialogHeader className="mb-2">
-          <DialogTitle className="text-sm font-semibold">
-            {title}
-          </DialogTitle>
+          <DialogTitle className="text-sm font-semibold">{title}</DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-2">
-
-
           <div className="grid grid-cols-2 gap-2">
             <Field>
               <FieldLabel>First Name</FieldLabel>
@@ -171,9 +161,7 @@ const CreateContactDialog = ({ open, setActiveDialog, title }: Props) => {
                 />
               </InputGroup>
               {errors.firstName && (
-                <p className={errorClass}>
-                  {errors.firstName.message}
-                </p>
+                <p className={errorClass}>{errors.firstName.message}</p>
               )}
             </Field>
 
@@ -190,9 +178,7 @@ const CreateContactDialog = ({ open, setActiveDialog, title }: Props) => {
                 />
               </InputGroup>
               {errors.lastName && (
-                <p className={errorClass}>
-                  {errors.lastName.message}
-                </p>
+                <p className={errorClass}>{errors.lastName.message}</p>
               )}
             </Field>
           </div>
@@ -226,25 +212,19 @@ const CreateContactDialog = ({ open, setActiveDialog, title }: Props) => {
                 </div>
 
                 {errors.emails?.[index]?.email && (
-                    <p className={errorClass}>
-                      {errors.emails[index]?.email?.message}
-                    </p>
-                  )}
+                  <p className={errorClass}>
+                    {errors.emails[index]?.email?.message}
+                  </p>
+                )}
 
-                  {errors.emails?.message && (
-                    <div className="col-span-2">
-                      <p className={errorClass}>
-                        {errors.emails.message}
-                      </p>
-                    </div>
-                  )}
-
-
-                
+                {errors.emails?.message && (
+                  <div className="col-span-2">
+                    <p className={errorClass}>{errors.emails.message}</p>
+                  </div>
+                )}
               </Field>
             ))}
           </div>
-
 
           {/* PHONES */}
           <div className="grid grid-cols-1 gap-2">
@@ -273,27 +253,21 @@ const CreateContactDialog = ({ open, setActiveDialog, title }: Props) => {
                     />
                   </InputGroup>
                 </div>
-                
 
-                
                 {errors.phones?.[index]?.phone && (
-                    <p className={errorClass}>
-                      {errors.phones[index]?.phone?.message}
-                    </p>
-                  )}
+                  <p className={errorClass}>
+                    {errors.phones[index]?.phone?.message}
+                  </p>
+                )}
 
-                  {errors.phones?.message && (
-                    <div className="col-span-2">
-                      <p className={errorClass}>
-                        {errors.phones.message}
-                      </p>
-                    </div>
-                  )}
-
+                {errors.phones?.message && (
+                  <div className="col-span-2">
+                    <p className={errorClass}>{errors.phones.message}</p>
+                  </div>
+                )}
               </Field>
             ))}
           </div>
-
 
           {/* SOCIALS */}
           <div className="grid grid-cols-2 gap-2">
@@ -351,6 +325,7 @@ const CreateContactDialog = ({ open, setActiveDialog, title }: Props) => {
             </Button>
 
             <Button
+              className="px-3 py-3 bg-green-600 text-white text-xs font-bold"
               type="submit"
               disabled={!isDirty || isPending}
             >

@@ -1,4 +1,4 @@
-package com.shayankhanani.connexio.service;
+package com.shayankhanani.connexio.service.user;
 
 import com.shayankhanani.connexio.dto.user.UpdatePasswordDTO;
 import com.shayankhanani.connexio.dto.user.UpdateUserDTO;

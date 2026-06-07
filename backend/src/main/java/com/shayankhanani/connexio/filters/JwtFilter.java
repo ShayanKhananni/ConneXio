@@ -1,12 +1,13 @@
 package com.shayankhanani.connexio.filters;
 
-import com.shayankhanani.connexio.service.JWTService;
-import com.shayankhanani.connexio.service.MyUserDetailsService;
+import com.shayankhanani.connexio.service.auth.JWTService;
+import com.shayankhanani.connexio.service.auth.MyUserDetailsService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,8 +17,11 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
+
 @RequiredArgsConstructor
 @Component
+@ConditionalOnProperty(name = "security.enabled", havingValue = "true", matchIfMissing = true)
+
 public class JwtFilter extends OncePerRequestFilter {
 
     private final JWTService jwtService;

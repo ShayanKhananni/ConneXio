@@ -14,22 +14,16 @@ public class AddContactDTO {
 
     @NotBlank(message = "First name is required")
     private String firstName;
-
     @NotBlank(message = "Last name is required")
     private String lastName;
-
     @URL(message = "Invalid LinkedIn URL")
     private String linkedinUrl;
-
     @URL(message = "Invalid Instagram URL")
     private String instagramUrl;
-
     @URL(message = "Invalid profile image URL")
     private String profImageUrl;
-
     @URL(message = "Invalid Facebook URL")
     private String facebookUrl;
-
     @NotEmpty
     private List<AddEmailDTO> emails;
     @NotEmpty

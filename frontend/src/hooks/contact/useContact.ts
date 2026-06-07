@@ -1,7 +1,8 @@
-import { addContactApi, deletContactApi, getContactDetails, getContacts, getPagedContacts, updateContactApi } from "@/api/contactApi"
+import { addBacthContactsApi, addContactApi, deletContactApi, getContacts, getPagedContacts, updateContactApi } from "@/api/contactApi"
 import type { ContatcInfo } from "@/types/contactTypes";
-import type { CreateContactForm, UpdateContactForm } from "@/types/UpdateContactType"
+import type { UpdateContactForm } from "@/zod/contactSchema"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { toast } from "react-toastify";
 
 
 export const useContacts = () => {
@@ -52,10 +53,25 @@ export const useAddContact = () => {
       queryClient.invalidateQueries({
         queryKey: ["contacts"],
       });
+      toast.success("Contact Added Successfully");
     },
   });
 };
 
+export const useAddBatchContacts = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: addBacthContactsApi, 
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["contacts"],
+      });
+      toast.success("Contacts Imported Successfully");
+    },
+  });
+};
 
 export const useDeleteContact = () => {
   const queryClient = useQueryClient();
@@ -67,33 +83,47 @@ export const useDeleteContact = () => {
       queryClient.invalidateQueries({
         queryKey: ["contacts"],
       });
+      toast.success("Contact Deleted Successfully");
     },
   });
 };
+
 
 export const useContactDetails = (
   id: number | null,
   enabled: boolean
 ) => {
+  const queryClient = useQueryClient();
+
   return useQuery({
     queryKey: ["contact", id],
-    queryFn: () => getContactDetails(id as number),
+
+    queryFn: async () => {
+      const cachedPages = queryClient.getQueriesData({
+        queryKey: ["contacts"],
+      });
+
+      for (const [, data] of cachedPages) {
+        const contact = (data as any)?.content?.find(
+          (c: any) => c.contactId === id
+        );
+
+        if (contact) {
+          return contact;
+        }
+      }
+
+      throw new Error("Contact not found");
+    },
+
     enabled: !!id && enabled,
-
-    
-    staleTime: 1000 * 60 * 5, 
-    gcTime: 1000 * 60 * 30,   
-
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
+    staleTime: Infinity,
   });
 };
 
 
 export const useUpdateContact = () => {
   const queryClient = useQueryClient();
-
   
   return useMutation({
     mutationFn: ({ id, data }: { id: number; data: UpdateContactForm }) =>
@@ -102,17 +132,17 @@ export const useUpdateContact = () => {
     onSuccess: (updatedContact, variables) => {
       const id = variables.id;
 
-
-      // 1. update detail page cache
+      
       queryClient.setQueryData(
         ["contact", id],
         updatedContact
       );
 
-      // 2. invalidate all list caches
       queryClient.invalidateQueries({
         queryKey: ["contacts"],
       });
+
+      toast.success("Contacts Updated Successfully");
     },
   });
 };

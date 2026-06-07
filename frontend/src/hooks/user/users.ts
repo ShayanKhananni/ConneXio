@@ -5,6 +5,7 @@ import { useAuthStore } from "@/store/authStore";
 import { getUserDetailsApi, updatePasswordApi, updateUserDetailsApi } from "@/api/userApi";
 import type { UpdateProfileForm } from "@/zod/userProfileSchema";
 import type { UpdatePasswordForm } from "@/zod/changePasswordSchema";
+import { toast } from "react-toastify";
 
 export const useCurrentUser = () => {
   const token = useAuthStore((state) => state.token);
@@ -27,6 +28,8 @@ export const useUpdateUser = () => {
 
     onSuccess: (updatedUser) => {
       queryClient.setQueryData(["profile"], updatedUser);
+      toast.success("Profile Updated Successfully");
+      
     },
   })}
 
@@ -35,5 +38,8 @@ export const useUpdateUser = () => {
     return useMutation({
       mutationFn: (data: UpdatePasswordForm) =>
         updatePasswordApi(data),  
-    })
+
+      onSuccess: () => {
+        toast.success("Password Updated Successfully");
+    }  })
   }

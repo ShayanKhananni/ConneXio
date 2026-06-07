@@ -5,8 +5,8 @@ import {
   DialogTitle,
 } from "@/Components/ui/dialog";
 import { Button } from "@/Components/ui/button";
-import type { Contact, ContatcInfo } from "@/types/contactTypes";
-import { User, Phone, Mail, Link } from "lucide-react";
+import type { Contact } from "@/types/contactTypes";
+import { User, Phone, Mail } from "lucide-react";
 import { FaFacebookSquare, FaLinkedin, FaInstagram } from "react-icons/fa";
 
 type ContactInfoDialogTypes = {
@@ -22,6 +22,10 @@ const ContactInfoModal = ({
   setActiveDialog,
   title,
 }: ContactInfoDialogTypes) => {
+
+  
+
+
   const initials = contact
     ? `${contact.firstName?.[0] ?? ""}${
         contact.lastName?.[0] ?? ""

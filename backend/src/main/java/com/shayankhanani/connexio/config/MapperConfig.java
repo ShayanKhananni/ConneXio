@@ -1,11 +1,12 @@
 package com.shayankhanani.connexio.config;
-
-
 import com.shayankhanani.connexio.dto.contact.ContactDetailDTO;
 import com.shayankhanani.connexio.entity.Contact;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+
+
 
 @Configuration
 public class MapperConfig {

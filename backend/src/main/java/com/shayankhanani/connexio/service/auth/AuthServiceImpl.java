@@ -1,7 +1,7 @@
-package com.shayankhanani.connexio.service;
+package com.shayankhanani.connexio.service.auth;
 
 import com.shayankhanani.connexio.dto.auth.LoginDTO;
-import com.shayankhanani.connexio.dto.auth.LoignRespDTO;
+import com.shayankhanani.connexio.dto.auth.LoginRespDTO;
 import com.shayankhanani.connexio.dto.auth.RegisterDTO;
 import com.shayankhanani.connexio.entity.User;
 import com.shayankhanani.connexio.entity.Userprincipal;
@@ -12,6 +12,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -22,9 +23,10 @@ public class AuthServiceImpl implements AuthService {
     private final JWTService jwtService;
     private final UserRepo userRepo;
     private final ModelMapper modelMapper;
+    private final PasswordEncoder encoder;
 
 
-    public LoignRespDTO login(LoginDTO loginDTO)
+    public LoginRespDTO login(LoginDTO loginDTO)
     {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
@@ -39,16 +41,17 @@ public class AuthServiceImpl implements AuthService {
 
         String token = jwtService.generateToken(userId);
 
-        return new LoignRespDTO(token);
+        return new LoginRespDTO(token);
     }
-
 
     public void signup(RegisterDTO registerDTO)
     {
+
         if (userRepo.existsByEmailOrUsernameOrPhone(registerDTO.getEmail(),registerDTO.getUsername(),registerDTO.getPhone())) {
             throw new UserAlreadyExistException("User already exists");
         }
         User user = modelMapper.map(registerDTO, User.class);
+        user.setPassword(encoder.encode(registerDTO.getPassword()));
         userRepo.save(user);
     }
 

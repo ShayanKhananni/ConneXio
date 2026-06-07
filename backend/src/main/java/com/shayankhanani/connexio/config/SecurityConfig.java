@@ -2,7 +2,7 @@ package com.shayankhanani.connexio.config;
 
 
 import com.shayankhanani.connexio.filters.JwtFilter;
-import com.shayankhanani.connexio.service.MyUserDetailsService;
+import com.shayankhanani.connexio.service.auth.MyUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -83,9 +83,8 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(12); // temporary (dev only)
+        return new BCryptPasswordEncoder(12);
     }
-
 
 
     @Bean

@@ -1,8 +1,9 @@
-import { Info, Pencil, Trash2, Link, Eye } from "lucide-react";
+import { Info, Pencil, Trash2, Eye, Copy, Check } from "lucide-react";
 import { FaFacebookSquare } from "react-icons/fa";
 import { IoLogoLinkedin } from "react-icons/io5";
 import { FaInstagram } from "react-icons/fa";
 import type { Contact } from "@/types/contactTypes";
+import { useState } from "react";
 
 type Props = {
   contact: Contact;
@@ -12,6 +13,41 @@ type Props = {
 };
 
 const ContactCard = ({ contact, onDelete, onInfo, onUpdate }: Props) => {
+
+
+  const [copied,setCopied] = useState(false);
+
+
+  const handCopyContact = (contact:Contact) =>
+  {
+    setCopied(true);
+    setTimeout(() => {
+      setCopied(false);
+    }, (500));
+
+    navigator.clipboard.writeText(formatContact(contact)); 
+  }
+
+  const formatContact = (contact: Contact) => {
+    return `
+  ${contact.firstName} ${contact.lastName}
+  
+  Emails:
+  ${contact.emails.map(e => e.email + `(${e.label})` ) .join("\n")}
+  
+  Phones:
+  ${contact.phones.map(p => p.phone + `(${p.label})` ).join("\n")}
+  
+  Social-Links:
+  ${contact.facebookUrl ? `Facebook: ${contact.facebookUrl}` : ""}
+  ${contact.linkedinUrl ? `LinkedIn: ${contact.linkedinUrl}` : ""}
+  ${contact.instagramUrl ? `Instagram: ${contact.instagramUrl}` : ""}
+  `.trim()
+  ;
+
+
+  };
+
 
   return (
     <div className="bg-white rounded-xl shadow-lg p-4 w-full  border border-gray-200 select-none">
@@ -43,14 +79,20 @@ const ContactCard = ({ contact, onDelete, onInfo, onUpdate }: Props) => {
         <button
           className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors"
           title="Copy profile link"
+          onClick={() => {
+            handCopyContact(contact);
+          }}
         >
-          <Link className="w-4 h-4 text-gray-600" />
+          {copied ? (
+            <Check className="w-4 h-4 text-green-600" />
+          ) : (
+            <Copy className="w-4 h-4 text-gray-600" />
+          )}
         </button>
       </div>
 
       {/* Mutual + Social */}
       <div className="mb-4 flex items-center justify-between">
-
         <div className="flex items-center">
           {/* Avatar 1 */}
           <img
@@ -75,8 +117,6 @@ const ContactCard = ({ contact, onDelete, onInfo, onUpdate }: Props) => {
           <p className="text-sm font-bold ms-3">View Mutual Contacts</p>
         </div>
 
-        
-
         <div className="flex items-center">
           {contact.facebookUrl && (
             <a
@@ -88,7 +128,6 @@ const ContactCard = ({ contact, onDelete, onInfo, onUpdate }: Props) => {
               <FaFacebookSquare className="w-5 h-5 text-blue-600 group-hover:scale-110 transition-transform" />
             </a>
           )}
-
 
           {contact.linkedinUrl && (
             <a
@@ -116,20 +155,22 @@ const ContactCard = ({ contact, onDelete, onInfo, onUpdate }: Props) => {
 
       {/* Action buttons */}
       <div className="flex gap-2">
-        <button 
-        onClick={() => {
-          onInfo(contact.contactId);
-        }}
-         className="flex-1 flex items-center justify-center gap-1 px-3 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-sm">
+        <button
+          onClick={() => {
+            onInfo(contact.contactId);
+          }}
+          className="flex-1 flex items-center justify-center gap-1 px-3 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-sm"
+        >
           <Info className="w-4 h-4" />
           Info
         </button>
 
         <button
-         onClick={() => {
-          onUpdate(contact.contactId);
-        }}
-         className="flex-1 flex items-center justify-center gap-1 px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-sm">
+          onClick={() => {
+            onUpdate(contact.contactId);
+          }}
+          className="flex-1 flex items-center justify-center gap-1 px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-sm"
+        >
           <Pencil className="w-4 h-4" />
           Update
         </button>

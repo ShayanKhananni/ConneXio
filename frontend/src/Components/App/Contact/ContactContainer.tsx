@@ -11,18 +11,18 @@ import ContactCard from "./ConactCard";
 import ContactUpdateDialog from "./ContactUpdateDialog";
 import CreateContactDialog from "./CreateContactDialog";
 
-import { UserRound, Plus } from "lucide-react";
+import { Plus, FileUp } from "lucide-react";
 import PageTabs from "./PageTabs";
 import ContactSearcher from "./ContactSearcher";
+import ExportContacts from "./ExportContacts";
+import ImporterDialog from "./ImporterDialog";
 
-type ActiveDialog = "info" | "update" | "delete" | "create" | null;
-
+type ActiveDialog = "info" | "update" | "delete" | "create" | "import" | null;
 
 const ContactContainer = () => {
-
-
-  // ---------------- STATE ----------------
-  const [selectedContactId, setSelectedContactId] = useState<number | null>(null);
+  const [selectedContactId, setSelectedContactId] = useState<number | null>(
+    null
+  );
   const [activeDialog, setActiveDialog] = useState<ActiveDialog>(null);
 
   const [search, setSearch] = useState("");
@@ -30,8 +30,6 @@ const ContactContainer = () => {
   const [pageSize] = useState(6);
 
   const [openDeleteDialog, setDeleteOpen] = useState(false);
-
-
 
   const {
     data: pagedContacts,
@@ -49,8 +47,6 @@ const ContactContainer = () => {
   );
 
   const deleteMutation = useDeleteContact();
-
-
 
   const handleOnDelete = useCallback((id: number) => {
     setSelectedContactId(id);
@@ -83,52 +79,90 @@ const ContactContainer = () => {
     setPageNumber(page);
   }, []);
 
+  const handleOnExport = useCallback(() => {
+    setActiveDialog("import");
+  }, []);
 
-  const contacts = useMemo(
-    () => pagedContacts?.content ?? [],
-    [pagedContacts]
-  );
 
+  const contacts = useMemo(() => pagedContacts?.content ?? [], [pagedContacts]);
 
   if (isPagedLoading) return <p>Loading...</p>;
   if (error) return <p>Something went wrong</p>;
 
-
   return (
     <>
-      <div className="border-2 px-5  mx-5 main-container">
-        {/* SEARCH */}
-        <ContactSearcher search={search} setSearch={setSearch} />
+      {/* SEARCH */}
+      <ContactSearcher search={search} setSearch={setSearch} />
+      
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-center sm:ps-10 my-4 lg:px-16 px-5">
 
-        {/* ADD BUTTON */}
-        <button
-          onClick={handleOnCreate}
-          className="flex items-center ms-auto mb-2 me-2 mt-1 gap-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium px-4 py-2 rounded-md transition-colors shadow-sm"
-        >
-          <Plus className="w-4 h-4" />
-          <UserRound className="w-4 h-4" />
-          Add Contact
-        </button>
+        {/* Actions */}
+        <div className="flex  order-1 lg:order-2  justify-center  lg:justify-end gap-2">
+          <button
+            onClick={handleOnCreate}
+            className="flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium px-4 py-2 rounded-md transition-colors shadow-sm"
+          >
+            <Plus className="w-4 h-4" />
+            Add
+          </button>
 
-        {/* CONTACT GRID */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {contacts.map((contact) => (
-            <ContactCard
-              key={contact.contactId}
-              contact={contact}
-              onDelete={handleOnDelete}
-              onInfo={handleOnInfo}
-              onUpdate={handleOnUpdate}
-            />
-          ))}
+          <button
+            onClick={handleOnExport}
+            className="flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium px-4 py-2 rounded-md transition-colors shadow-sm"
+          >
+            <FileUp className="w-4 h-4" />
+            Import
+          </button>
+
+          <ExportContacts
+            pageNumber={pageNumber}
+            pageSize={pageSize}
+            search={search}
+          />
         </div>
 
+        {/* Pagination Info */}
+        <div className="flex flex-col sm:flex-row order-2 lg:order-1 gap-2 sm:gap-6  text-sm sm:text-center text-gray-600">
+          <span>
+            Showing {pagedContacts?.numberOfElements ?? 0} of{" "}
+            {pagedContacts?.totalElements ?? 0} contacts
+          </span>
 
-        <PageTabs
-          totalPages={pagedContacts?.totalPages ?? 0}
-          currentPage={pageNumber}
-          handleOnPageChange={handleOnPageChange}
-        />
+          <span>
+            Page {(pagedContacts?.number ?? 0) + 1} of{" "}
+            {pagedContacts?.totalPages ?? 0}
+          </span>
+        </div>
+      </div>
+
+      <div className=" px-5 h-full m-5  main-container">
+        {/* CONTACT GRID */}
+
+        {contacts.length === 0 ? (
+          <div className="text-center text-gray-500 mt-10">
+            No contacts found Please Add Some Contacts!!!
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {contacts.map((contact) => (
+              <ContactCard
+                key={contact.contactId}
+                contact={contact}
+                onDelete={handleOnDelete}
+                onInfo={handleOnInfo}
+                onUpdate={handleOnUpdate}
+              />
+            ))}
+          </div>
+        )}
+{/* 
+        {contacts.length && ( */}
+          <PageTabs
+            totalPages={pagedContacts?.totalPages ?? 0}
+            currentPage={pageNumber}
+            handleOnPageChange={handleOnPageChange}
+          />
+        
       </div>
 
       {activeDialog === "update" && (
@@ -153,6 +187,14 @@ const ContactContainer = () => {
         <CreateContactDialog
           open
           title="Create Contact"
+          setActiveDialog={setActiveDialog}
+        />
+      )}
+
+      {activeDialog === "import" && (
+        <ImporterDialog
+          open
+          title="Import Contact"
           setActiveDialog={setActiveDialog}
         />
       )}

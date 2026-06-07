@@ -1,4 +1,4 @@
-package com.shayankhanani.connexio.service;
+package com.shayankhanani.connexio.service.auth;
 
 import com.shayankhanani.connexio.entity.User;
 import com.shayankhanani.connexio.entity.Userprincipal;
@@ -22,7 +22,6 @@ public class MyUserDetailsService implements UserDetailsService {
 
         if(user == null)
         {
-            System.out.println("User not found!!");
             throw new UsernameNotFoundException("Username not Found!!");
         }
         return new Userprincipal(user);

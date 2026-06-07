@@ -1,4 +1,4 @@
-package com.shayankhanani.connexio.service;
+package com.shayankhanani.connexio.service.auth;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

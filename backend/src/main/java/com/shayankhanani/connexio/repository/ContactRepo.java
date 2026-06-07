@@ -19,7 +19,6 @@ public interface ContactRepo extends JpaRepository<Contact,Long> {
     Page<Contact> findContactByOwner(User owner, Pageable pageable);
 
 
-
     @Query("""
     SELECT c FROM Contact c
     WHERE c.owner = :owner
@@ -32,6 +31,4 @@ public interface ContactRepo extends JpaRepository<Contact,Long> {
             @Param("search") String search,
             Pageable pageable
     );
-
-
 }

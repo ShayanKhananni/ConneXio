@@ -1,6 +1,7 @@
 import type { Contact, ContatcInfo } from "@/types/contactTypes"
 import api from "./axiosInstance"
-import type { CreateContactForm, UpdateContactForm } from "@/types/UpdateContactType"
+import type { CreateContactForm, UpdateContactForm } from "@/zod/contactSchema"
+
 
 
 export const getContacts = async (): Promise<ContatcInfo[]> => {
@@ -28,9 +29,17 @@ export const updateContactApi = async (
 
 
 export const addContactApi = async (
-  contact: CreateContactForm
+  contact: any
 ) => {
   const response = await api.post(`/contact`,contact);
+  return response.data;
+};
+
+
+export const addBacthContactsApi = async (
+  contact: any[]
+) => {
+  const response = await api.post(`/contact/batch`,contact);
   return response.data;
 };
 

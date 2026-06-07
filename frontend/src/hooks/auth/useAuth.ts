@@ -3,6 +3,8 @@ import { useAuthStore } from '../../store/authStore'
 import { loginApi, registerApi } from '../../api/authApi'
 import type { UseFormSetError } from 'react-hook-form'
 import type { LoginCredentials, RegisterCredentials } from '@/types/authTypes'
+import { toast } from 'react-toastify'
+import { useNavigate } from 'react-router-dom'
 
 
 export const useLogin = (setError: UseFormSetError<LoginCredentials>) => {
@@ -13,13 +15,13 @@ export const useLogin = (setError: UseFormSetError<LoginCredentials>) => {
     mutationFn: loginApi,
 
     onSuccess: (data) => {
+      toast.success("Login Successful");
       setToken(data.token)
     },
     
     onError: (error:any) => 
     {
       const message = error?.response?.data?.message || "Something went wrong"
-      console.error("Login error:", message);
       setError("root", { message })  
     }
   })
@@ -29,13 +31,17 @@ export const useLogin = (setError: UseFormSetError<LoginCredentials>) => {
 
 export const useSignup = (setError: UseFormSetError<RegisterCredentials>) =>
 {
+  const navigate = useNavigate();
+
+
   return useMutation({
     
     mutationFn: registerApi,
 
     onSuccess: (data) => {
       console.log("Signup successful:", data);
-      // navigation
+      toast.success("Signup Successful");
+      navigate("/login");
     },
 
     onError: (error:any) => 
@@ -46,4 +52,5 @@ export const useSignup = (setError: UseFormSetError<RegisterCredentials>) =>
       }
 
   })
+
 }

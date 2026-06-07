@@ -8,7 +8,6 @@ type PageTabsProps = {
   ) => void;
 };
 
-
 const PageTabs = ({
   totalPages,
   currentPage,
@@ -16,21 +15,16 @@ const PageTabs = ({
 }: PageTabsProps) => {
   return (
     <div className="flex gap-2 mt-4  flex-wrap">
+      
 
-      <p className="mt-1" >Pages</p>
+      {Array.from({ length: totalPages }, (_, index) => {
+        const page = index + 1;
 
-      {Array.from(
-        { length: totalPages },
-        (_, index) => {
-          const page = index + 1;
-
-          return (
-            <button
-              key={page}
-              onClick={() =>
-                handleOnPageChange(page)
-              }
-              className={`
+        return (
+          <button
+            key={page}
+            onClick={() => handleOnPageChange(page)}
+            className={`
                 px-3 text-md font-bold py-1 rounded border
                 ${
                   currentPage === page
@@ -38,12 +32,11 @@ const PageTabs = ({
                     : "bg-white text-black"
                 }
               `}
-            >
-              {page}
-            </button>
-          );
-        }
-      )}
+          >
+            {page}
+          </button>
+        );
+      })}
     </div>
   );
 };

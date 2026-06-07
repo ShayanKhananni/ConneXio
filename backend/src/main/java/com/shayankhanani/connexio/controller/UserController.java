@@ -4,7 +4,7 @@ import com.shayankhanani.connexio.dto.user.UpdatePasswordDTO;
 import com.shayankhanani.connexio.dto.user.UpdateUserDTO;
 import com.shayankhanani.connexio.dto.user.UserDetailsDTO;
 import com.shayankhanani.connexio.entity.Userprincipal;
-import com.shayankhanani.connexio.service.UserService;
+import com.shayankhanani.connexio.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
@@ -40,7 +40,6 @@ public class UserController {
     @PutMapping("/password")
     public ResponseEntity<Map<String,String>> updatePassword(@AuthenticationPrincipal Userprincipal user, @RequestBody UpdatePasswordDTO dto)
     {
-        System.out.println(dto);
         userService.updatePassword(user,dto);
         return ResponseEntity.ok(
                 Map.of("message", "Password updated successfully")

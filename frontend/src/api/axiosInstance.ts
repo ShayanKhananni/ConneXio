@@ -1,7 +1,7 @@
 import { useAuthStore } from '@/store/authStore'
 import axios from 'axios'
 
-
+///  Base URL for API requests
 const api = axios.create({
   baseURL: 'http://localhost:8080/api',
 })
@@ -14,6 +14,7 @@ api.interceptors.request.use((config) => {
   }
   return config
 })
+
 
 // Auto logout on 401
 api.interceptors.response.use(

@@ -32,6 +32,7 @@ public class User implements UserDetails {
 
     private LocalDateTime createdAt = LocalDateTime.now();
 
+    @SuppressWarnings("squid:S1948")
     @OneToMany(mappedBy = "owner")
     @JsonIgnore
     private List<Contact> contacts;
