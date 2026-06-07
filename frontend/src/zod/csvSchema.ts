@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { urlField } from "./schemaUtils";
 
 const LabelSchema = z.preprocess(
   (val) => {
@@ -13,6 +14,9 @@ export const csvRowSchema = z
   .object({
     firstName: z.string().min(1, "First name is required"),
     lastName: z.string().min(1, "Last name is required"),
+    linkedin_url: urlField ,
+    facebook_url: urlField ,
+    instagram_url: urlField ,
 
     email_1: z
       .string()

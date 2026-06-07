@@ -29,6 +29,9 @@ type Contact = {
   lastName: string;
   emails: { email: string; label: string }[];
   phones: { phone: string; label: string }[];
+  linkedinUrl?: string;
+  facebookUrl?: string;
+  instagramUrl?: string;
 };
 
 const REQUIRED_HEADERS = [
@@ -44,7 +47,9 @@ const OPTIONAL_HEADERS = [
   "email_2",
   "email_label_2",
   "phone_2",
-  "phone_label_2",
+  "facebook_url",
+  "linkedin_url",
+  "instagram_url",
 ];
 
 
@@ -64,8 +69,13 @@ function rowToContact(row: z.infer<typeof csvRowSchema>): Contact {
         ? [{ phone: row.phone_2, label: row.phone_label_2 ?? "" }]
         : []),
     ],
+    linkedinUrl: row.linkedin_url,
+    facebookUrl: row.facebook_url,
+    instagramUrl:  row.instagram_url,
+
   };
 }
+
 
 
 const ImporterDialog = ({
@@ -196,14 +206,15 @@ const ImporterDialog = ({
         failed.push({ row: index + 1, errors: intraRowErrors });
         return;
       }
-
       succeeded.push(rowToContact(result.data));
+
     });
 
     setRowErrors(failed);
 
     if (succeeded.length === 0) return;
 
+    console.log(succeeded)
 
     addBatchContact(succeeded, {
       onSuccess: () => {

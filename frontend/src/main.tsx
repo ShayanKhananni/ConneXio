@@ -13,7 +13,6 @@ import "react-toastify/dist/ReactToastify.css";
 
 
 const router = createBrowserRouter([
-
   {
 
     element: <ProtectedRoute />, 

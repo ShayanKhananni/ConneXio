@@ -18,6 +18,7 @@ public class JWTService {
 
     public JWTService(@Value("${jwt.secret}") String envSecret) {
         this.secretKey = envSecret;
+        System.out.println("JWT-SECRET" + envSecret);
     }
 
     public String generateToken(Long userId) {
