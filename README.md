@@ -30,12 +30,13 @@ It provides secure authentication using JWT, CRUD operations for contacts, and a
 ---
 
 ## 📁 Project Structure
+
+```
 Connexio/
 │
 ├── backend/     # Spring Boot application
 └── frontend/    # React application
-
----
+```
 
 ## 🛠️ Installation & Setup Guide
 
@@ -96,7 +97,7 @@ CREATE DATABASE connexio_schema;
 ### 🔐 Step 5: Update Security Config
 
 Inside `config/SecurityConfig.java`, update the allowed frontend origin:
-http://localhost:5173
+http://localhost:5173 (By your react server url)
 
 ---
 
@@ -105,3 +106,46 @@ http://localhost:5173
 The backend will be available at:
 http://localhost:8080/api
 
+
+---
+
+## ⚛️ Frontend Setup (React)
+
+### 📌 Step 1: Open Frontend
+
+Open the `frontend/` folder in **VS Code** (Recommended), then install all dependencies by running the following in the terminal:
+
+```bash
+npm install
+```
+
+---
+
+### ⚙️ Step 2: Configure Axios Base URL
+
+Inside `src/api/axiosInstance.ts`, the base URL is set to point to your Spring Boot backend:
+
+```typescript
+// Base URL for API requests
+const api = axios.create({
+  baseURL: 'http://localhost:8080/api',
+})
+```
+
+> ⚠️ **Note:** If your backend is running on a different port, or if you've changed the `server.servlet.context-path` in `application.properties`, update the `baseURL` here accordingly.
+
+---
+
+### ▶️ Step 3: Run the Frontend
+
+Start the development server:
+
+```bash
+npm run dev
+```
+
+The frontend will be available at:
+
+```
+http://localhost:5173
+```
