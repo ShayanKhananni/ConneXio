@@ -36,6 +36,8 @@ Connexio/
 │
 ├── backend/     # Spring Boot application
 └── frontend/    # React application
+    └── csv/
+        └── book.csv   # Sample CSV for contact import
 ```
 
 ## 🛠️ Installation & Setup Guide
@@ -149,3 +151,48 @@ The frontend will be available at:
 ```
 http://localhost:5173
 ```
+
+---
+
+## 📥 CSV Import Feature
+
+Connexio supports bulk contact importing via CSV upload.
+
+### 📄 Sample CSV
+
+A sample CSV file is provided at `frontend/csv/book.csv`. Use this file to test the import feature.
+
+### 📋 CSV Format
+
+Your CSV must include the following **required columns**:
+
+| Column | Description |
+|---|---|
+| `firstName` | Contact's first name |
+| `lastName` | Contact's last name |
+| `email_1` | Primary email address |
+| `email_label_1` | Label for primary email (e.g. `work`, `personal`) |
+| `phone_1` | Primary phone number |
+| `phone_label_1` | Label for primary phone (e.g. `mobile`, `home`) |
+
+The following columns are **optional**:
+
+| Column | Description |
+|---|---|
+| `email_2` | Secondary email address |
+| `email_label_2` | Label for secondary email |
+| `phone_2` | Secondary phone number |
+| `phone_label_2` | Label for secondary phone |
+| `linkedin_url` | LinkedIn profile URL |
+| `facebook_url` | Facebook profile URL |
+| `instagram_url` | Instagram profile URL |
+
+### ✅ How to Import
+
+1. Log in to Connexio.
+2. Navigate to the **Contacts** section.
+3. Click the **Import CSV** button.
+4. Select your CSV file (you can use `frontend/csv/book.csv` as a starting point).
+5. Review the parsed preview and confirm the import.
+
+> ⚠️ **Note:** Make sure your CSV headers exactly match the column names listed above. The first row of the file must be the header row.
