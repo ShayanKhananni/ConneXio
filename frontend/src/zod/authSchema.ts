@@ -1,5 +1,5 @@
 import { z } from "zod";
-import {passwordUtil, phoneUtil } from "./schemaUtils";
+import {passwordUtil} from "./schemaUtils";
 
 
 export const userNameUtil = z
@@ -27,6 +27,10 @@ export const registerSchema = z.object({
   password: passwordUtil,
 });
 
+
+export interface LoginResponse {
+  token: string
+}
 
 export type LoginCredentials = z.infer<typeof loginSchema>;
 export type SignupCredentials = z.infer<typeof registerSchema>;

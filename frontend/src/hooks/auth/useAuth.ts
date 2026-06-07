@@ -2,7 +2,7 @@ import { useMutation } from '@tanstack/react-query'
 import { useAuthStore } from '../../store/authStore'
 import { loginApi, registerApi } from '../../api/authApi'
 import type { UseFormSetError } from 'react-hook-form'
-import type { LoginCredentials, RegisterCredentials } from '@/types/authTypes'
+import type { LoginCredentials, SignupCredentials } from '@/zod/authSchema'
 import { toast } from 'react-toastify'
 import { useNavigate } from 'react-router-dom'
 
@@ -28,8 +28,7 @@ export const useLogin = (setError: UseFormSetError<LoginCredentials>) => {
 }
 
 
-
-export const useSignup = (setError: UseFormSetError<RegisterCredentials>) =>
+export const useSignup = (setError: UseFormSetError<SignupCredentials>) =>
 {
   const navigate = useNavigate();
 

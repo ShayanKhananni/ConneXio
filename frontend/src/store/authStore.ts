@@ -1,13 +1,9 @@
-import type { UserDetailsDTO } from '@/types/authTypes'
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
 interface AuthState {
   token: string | null
-  user: UserDetailsDTO | null
-
   setToken: (token: string) => void
-  setUser: (user: UserDetailsDTO) => void
   logout: () => void
 }
 
@@ -16,13 +12,10 @@ export const useAuthStore = create<AuthState>()(
     (set) => ({
       token: null,
       user: null,
-
       setToken: (token) => set({ token }),
-      setUser: (user) => set({ user }),
-
       logout: () => {
         console.log("logout Called")
-        set({ token: null, user: null })},
+        set({ token: null})},
     }),
     { name: 'auth-storage' }
   )
