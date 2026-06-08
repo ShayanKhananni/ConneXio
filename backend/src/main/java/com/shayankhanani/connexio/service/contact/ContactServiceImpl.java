@@ -81,12 +81,11 @@ public class ContactServiceImpl implements ContactService {
     }
 
 
-    @Transactional
-    @Override
-    public ContactDetailDTO addContact(AddContactDTO dto, Userprincipal owner) {
+    private Contact buildContact(AddContactDTO dto, Userprincipal owner) {
 
         if (dto.getEmails().size() > 2 || dto.getPhones().size() > 2) {
-            throw new InvalidValueException("Only two emails and phone are allowed per contact");
+            throw new InvalidValueException(
+                    "Only two emails and phones are allowed per contact");
         }
 
         Set<String> emailSet = dto.getEmails().stream()
@@ -108,30 +107,40 @@ public class ContactServiceImpl implements ContactService {
         Contact contact = modelMapper.map(dto, Contact.class);
         contact.setOwner(owner.getUser());
 
-        List<ContactPhone> contactPhoneEntities = dto.getPhones().stream()
+        List<ContactPhone> phones = dto.getPhones().stream()
                 .map(p -> {
-                    ContactPhone contactPhone = new ContactPhone();
-                    contactPhone.setPhone(p.getPhone());
-                    contactPhone.setLabel(p.getLabel());
-                    contactPhone.setContact(contact);
-                    return contactPhone;
+                    ContactPhone phone = new ContactPhone();
+                    phone.setPhone(p.getPhone());
+                    phone.setLabel(p.getLabel());
+                    phone.setContact(contact);
+                    return phone;
                 })
-                .collect(Collectors.toList());
+                .toList();
 
-        List<ContactEmail> contactEmailEntities = dto.getEmails().stream()
+        List<ContactEmail> emails = dto.getEmails().stream()
                 .map(e -> {
-                    ContactEmail contactEmail = new ContactEmail();
-                    contactEmail.setEmail(e.getEmail());
-                    contactEmail.setLabel(e.getLabel());
-                    contactEmail.setContact(contact);
-                    return contactEmail;
+                    ContactEmail email = new ContactEmail();
+                    email.setEmail(e.getEmail());
+                    email.setLabel(e.getLabel());
+                    email.setContact(contact);
+                    return email;
                 })
-                .collect(Collectors.toList());
+                .toList();
+
+        contact.setContactPhones(phones);
+        contact.setContactEmails(emails);
+
+        return contact;
+    }
 
 
-        contact.setContactPhones(contactPhoneEntities);
-        contact.setContactEmails(contactEmailEntities);
+    @Transactional
+    @Override
+    public ContactDetailDTO addContact(
+            AddContactDTO dto,
+            Userprincipal owner) {
 
+        Contact contact = buildContact(dto, owner);
         Contact saved = contactRepo.save(contact);
         return modelMapper.map(saved, ContactDetailDTO.class);
     }
@@ -176,8 +185,6 @@ public class ContactServiceImpl implements ContactService {
         return modelMapper.map(updated, ContactDetailDTO.class);
 
     }
-
-
     @Override
     public void deleteById(Long id, Userprincipal owner) {
        Contact contact = contactRepo.findByContactIdAndOwner(id,owner.getUser()).orElseThrow(()-> new
@@ -185,17 +192,24 @@ public class ContactServiceImpl implements ContactService {
        contactRepo.deleteById(contact.getContactId());
     }
 
-
     @Override
-    public List<ContactDetailDTO> saveBatchContacts(Userprincipal owner, List<AddContactDTO> contacts) {
-        List<ContactDetailDTO> savedContacts = new ArrayList<>();
+    @Transactional
+    public List<ContactDetailDTO> saveBatchContacts(
+            Userprincipal owner,
+            List<AddContactDTO> dtos) {
 
-        for (AddContactDTO contact : contacts) {
-            savedContacts.add(addContact(contact, owner));
-        }
+        List<Contact> contacts = dtos.stream()
+                .map(dto -> buildContact(dto, owner))
+                .toList();
 
-        return savedContacts;
+        List<Contact> savedContacts = contactRepo.saveAll(contacts);
+
+        return savedContacts.stream()
+                .map(contact -> modelMapper.map(contact, ContactDetailDTO.class))
+                .toList();
     }
+
+
 
 
 

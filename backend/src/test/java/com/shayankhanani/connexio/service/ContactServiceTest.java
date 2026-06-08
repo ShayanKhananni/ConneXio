@@ -260,7 +260,6 @@ class ContactServiceTest {
 
 
     // Update Contact Test Cases
-
     @Test
     void updateContactInfo_shouldCallDependencies_andReturnMappedDTO() {
 
@@ -320,8 +319,8 @@ class ContactServiceTest {
         verify(contactRepo, never()).save(any());
     }
 
-    // Delete Contact Test Cases
 
+    // Delete Contact Test Cases
     @Test
     void deleteById_shouldDeleteContactSuccessfully() {
 
@@ -340,17 +339,16 @@ class ContactServiceTest {
 
 
     @Test
-    void saveBatchContacts_shouldReturnSavedContacts_whenValidInput() {
+    void saveBatchContacts_ShouldSaveAllContactsAndReturnDtos() {
 
 
-        // shared email + phone (reused twice as you wanted)
         AddEmailDTO email = new AddEmailDTO();
-        email.setEmail("john@gmail.com");
+        email.setEmail("john.doe@example.com");
         email.setLabel("WORK");
 
         AddPhoneDTO phone = new AddPhoneDTO();
-        phone.setPhone("1234567890");
-        phone.setLabel("mobile");
+        phone.setPhone("923001234567");
+        phone.setLabel("WORK");
 
         AddContactDTO dto1 = new AddContactDTO();
         dto1.setFirstName("John");
@@ -360,38 +358,40 @@ class ContactServiceTest {
 
         AddContactDTO dto2 = new AddContactDTO();
         dto2.setFirstName("Jane");
-        dto2.setLastName("Smith");
+        dto2.setLastName("Doe");
         dto2.setEmails(List.of(email));
         dto2.setPhones(List.of(phone));
 
-        List<AddContactDTO> input = List.of(dto1, dto2);
+        List<AddContactDTO> dtos = List.of(dto1, dto2);
 
-        ContactDetailDTO saved1 = new ContactDetailDTO();
-        saved1.setFirstName("John");
-        saved1.setLastName("Doe");
+        Contact contact1 = new Contact();
+        Contact contact2 = new Contact();
 
-        ContactDetailDTO saved2 = new ContactDetailDTO();
-        saved2.setFirstName("Jane");
-        saved2.setLastName("Smith");
+        ContactDetailDTO detail1 = new ContactDetailDTO();
+        ContactDetailDTO detail2 = new ContactDetailDTO();
 
-        // Spy service because addContact is internal method
-        ContactServiceImpl spyService = Mockito.spy(contactService);
+        when(modelMapper.map(any(AddContactDTO.class), eq(Contact.class)))
+                .thenReturn(new Contact());
 
-        doReturn(saved1).when(spyService).addContact(dto1, owner);
-        doReturn(saved2).when(spyService).addContact(dto2, owner);
+        when(contactRepo.saveAll(anyList()))
+                .thenReturn(List.of(contact1, contact2));
 
-        // Act
-        List<ContactDetailDTO> result = spyService.saveBatchContacts(owner, input);
+        when(modelMapper.map(contact1, ContactDetailDTO.class))
+                .thenReturn(detail1);
 
-        // Assert
+        when(modelMapper.map(contact2, ContactDetailDTO.class))
+                .thenReturn(detail2);
+
+        List<ContactDetailDTO> result =
+                contactService.saveBatchContacts(owner, dtos);
+
         assertEquals(2, result.size());
-        assertEquals("John", result.get(0).getFirstName());
-        assertEquals("Jane", result.get(1).getFirstName());
+        assertEquals(detail1, result.get(0));
+        assertEquals(detail2, result.get(1));
 
-        // Verify calls
-        verify(spyService, times(1)).addContact(dto1, owner);
-        verify(spyService, times(1)).addContact(dto2, owner);
+        verify(contactRepo).saveAll(anyList());
     }
+
 
 }
 
